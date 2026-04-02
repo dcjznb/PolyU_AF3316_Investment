@@ -1,0 +1,32 @@
+ticker,name,group
+USB,U.S. Bancorp,Treatment Big
+PNC,PNC Financial Services,Treatment Big
+TFC,Truist Financial,Treatment Big
+FITB,Fifth Third Bancorp,Treatment Big
+CFG,Citizens Financial Group,Treatment Big
+MTB,M&T Bank,Treatment Big
+HBAN,Huntington Bancshares,Treatment Big
+ZION,Zions Bancorporation,Treatment Small
+CMA,Comerica,Treatment Small
+KEY,KeyCorp,Treatment Small
+WAL,Western Alliance Bancorporation,Treatment Small
+BOKF,BOK Financial,Treatment Small
+FHN,First Horizon,Treatment Small
+PB,Prosperity Bancshares,Treatment Small
+EWBC,East West Bancorp,Treatment Small
+JPM,JPMorgan Chase,Control Big
+BAC,Bank of America,Control Big
+WFC,Wells Fargo,Control Big
+C,Citigroup,Control Big
+MS,Morgan Stanley,Control Big
+GS,Goldman Sachs,Control Big
+BX,Blackstone,Control Big
+BLK,BlackRock,Control Big
+COF,Capital One Financial,Control Small
+SYF,Synchrony Financial,Control Small
+ALL,Allstate,Control Small
+TRV,Travelers,Control Small
+PRU,Prudential Financial,Control Small
+MET,MetLife,Control Small
+HIG,The Hartford,Control Small
+SPY,SPDR S&P 500 ETF Trust,Benchmark
