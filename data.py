@@ -6,55 +6,59 @@ import pandas as pd
 import yfinance as yf
 
 
-START_DATE = "2018-03-01"
-EVENT_DATE = pd.Timestamp("2023-03-10")
+START_DATE = "2014-03-01"
+END_DATE = "2024-04-01"
+EVENT_DATE = pd.Timestamp("2019-03-11")
 
 
 UNIVERSE = [
-    {"ticker": "USB", "name": "U.S. Bancorp", "group": "Treatment Big"},
-    {"ticker": "PNC", "name": "PNC Financial Services", "group": "Treatment Big"},
-    {"ticker": "TFC", "name": "Truist Financial", "group": "Treatment Big"},
-    {"ticker": "FITB", "name": "Fifth Third Bancorp", "group": "Treatment Big"},
-    {"ticker": "CFG", "name": "Citizens Financial Group", "group": "Treatment Big"},
-    {"ticker": "MTB", "name": "M&T Bank", "group": "Treatment Big"},
-    {"ticker": "HBAN", "name": "Huntington Bancshares", "group": "Treatment Big"},
-    {"ticker": "ZION", "name": "Zions Bancorporation", "group": "Treatment Small"},
-    {"ticker": "CMA", "name": "Comerica", "group": "Treatment Small"},
-    {"ticker": "KEY", "name": "KeyCorp", "group": "Treatment Small"},
+    {"ticker": "BA", "name": "Boeing", "group": "Treatment Big"},
+    {"ticker": "GE", "name": "General Electric", "group": "Treatment Big"},
+    {"ticker": "LUV", "name": "Southwest Airlines", "group": "Treatment Big"},
+    {"ticker": "AAL", "name": "American Airlines", "group": "Treatment Big"},
+    {"ticker": "UAL", "name": "United Airlines", "group": "Treatment Big"},
+    {"ticker": "TDG", "name": "TransDigm Group", "group": "Treatment Big"},
+    {"ticker": "HEI", "name": "HEICO", "group": "Treatment Big"},
+    {"ticker": "RYAAY", "name": "Ryanair Holdings ADR", "group": "Treatment Big"},
+    {"ticker": "ATRO", "name": "Astronics", "group": "Treatment Small"},
+    {"ticker": "ALK", "name": "Alaska Air Group", "group": "Treatment Small"},
+    {"ticker": "HXL", "name": "Hexcel", "group": "Treatment Small"},
+    {"ticker": "WWD", "name": "Woodward", "group": "Treatment Small"},
+    {"ticker": "ATI", "name": "ATI", "group": "Treatment Small"},
+    {"ticker": "MOG-A", "name": "Moog Class A", "group": "Treatment Small"},
+    {"ticker": "AER", "name": "AerCap", "group": "Treatment Small"},
+    {"ticker": "DAL", "name": "Delta Air Lines", "group": "Control Big"},
+    {"ticker": "LMT", "name": "Lockheed Martin", "group": "Control Big"},
+    {"ticker": "NOC", "name": "Northrop Grumman", "group": "Control Big"},
+    {"ticker": "GD", "name": "General Dynamics", "group": "Control Big"},
+    {"ticker": "HON", "name": "Honeywell", "group": "Control Big"},
+    {"ticker": "FDX", "name": "FedEx", "group": "Control Big"},
+    {"ticker": "UPS", "name": "United Parcel Service", "group": "Control Big"},
+    {"ticker": "CSX", "name": "CSX", "group": "Control Big"},
+    {"ticker": "JBLU", "name": "JetBlue Airways", "group": "Control Small"},
     {
-        "ticker": "WAL",
-        "name": "Western Alliance Bancorporation",
-        "group": "Treatment Small",
+        "ticker": "VLRS",
+        "name": "Controladora Vuela ADR",
+        "group": "Control Small",
     },
-    {"ticker": "BOKF", "name": "BOK Financial", "group": "Treatment Small"},
-    {"ticker": "FHN", "name": "First Horizon", "group": "Treatment Small"},
-    {"ticker": "PB", "name": "Prosperity Bancshares", "group": "Treatment Small"},
-    {"ticker": "EWBC", "name": "East West Bancorp", "group": "Treatment Small"},
-    {"ticker": "JPM", "name": "JPMorgan Chase", "group": "Control Big"},
-    {"ticker": "BAC", "name": "Bank of America", "group": "Control Big"},
-    {"ticker": "WFC", "name": "Wells Fargo", "group": "Control Big"},
-    {"ticker": "C", "name": "Citigroup", "group": "Control Big"},
-    {"ticker": "MS", "name": "Morgan Stanley", "group": "Control Big"},
-    {"ticker": "GS", "name": "Goldman Sachs", "group": "Control Big"},
-    {"ticker": "BX", "name": "Blackstone", "group": "Control Big"},
-    {"ticker": "BLK", "name": "BlackRock", "group": "Control Big"},
-    {"ticker": "COF", "name": "Capital One Financial", "group": "Control Small"},
-    {"ticker": "SYF", "name": "Synchrony Financial", "group": "Control Small"},
-    {"ticker": "ALL", "name": "Allstate", "group": "Control Small"},
-    {"ticker": "TRV", "name": "Travelers", "group": "Control Small"},
-    {"ticker": "PRU", "name": "Prudential Financial", "group": "Control Small"},
-    {"ticker": "MET", "name": "MetLife", "group": "Control Small"},
-    {"ticker": "HIG", "name": "The Hartford", "group": "Control Small"},
+    {"ticker": "SKYW", "name": "SkyWest", "group": "Control Small"},
+    {"ticker": "ALGT", "name": "Allegiant Travel", "group": "Control Small"},
+    {
+        "ticker": "HII",
+        "name": "Huntington Ingalls Industries",
+        "group": "Control Small",
+    },
+    {"ticker": "TXT", "name": "Textron", "group": "Control Small"},
+    {"ticker": "LHX", "name": "L3Harris Technologies", "group": "Control Small"},
     {"ticker": "SPY", "name": "SPDR S&P 500 ETF Trust", "group": "Benchmark"},
 ]
 
 
 def download_prices(tickers: list[str]) -> pd.DataFrame:
-    end_date = pd.Timestamp.today().normalize() + pd.Timedelta(days=1)
     raw = yf.download(
         tickers=tickers,
         start=START_DATE,
-        end=end_date.strftime("%Y-%m-%d"),
+        end=END_DATE,
         interval="1mo",
         auto_adjust=False,
         group_by="ticker",
@@ -85,7 +89,7 @@ def download_prices(tickers: list[str]) -> pd.DataFrame:
         single = yf.download(
             tickers=ticker,
             start=START_DATE,
-            end=end_date.strftime("%Y-%m-%d"),
+            end=END_DATE,
             interval="1mo",
             auto_adjust=False,
             progress=False,
@@ -103,6 +107,10 @@ def download_prices(tickers: list[str]) -> pd.DataFrame:
 
     long_df = pd.concat(frames, ignore_index=True)
     long_df["Date"] = pd.to_datetime(long_df["Date"])
+    # yfinance may return placeholder rows for unavailable symbols; remove all-null price rows.
+    long_df = long_df.dropna(
+        subset=["Open", "High", "Low", "Close", "Adj Close"], how="all"
+    )
 
     meta = pd.DataFrame(UNIVERSE).rename(
         columns={"ticker": "Ticker", "name": "Name", "group": "Group"}
@@ -140,9 +148,11 @@ def main() -> None:
     tickers = [item["ticker"] for item in UNIVERSE]
     full_data = download_prices(tickers)
     before_data, after_data = split_event_windows(full_data)
+    available_tickers = set(full_data["Ticker"].unique())
+    missing_tickers = [t for t in tickers if t not in available_tickers and t != "SPY"]
 
-    before_path = output_dir / "prices_before_2023-03-10.csv"
-    after_path = output_dir / "prices_after_2023-03-10.csv"
+    before_path = output_dir / "prices_before_2019-03-11.csv"
+    after_path = output_dir / "prices_after_2019-03-11.csv"
     universe_path = output_dir / "ticker_universe.csv"
 
     before_data.to_csv(before_path, index=False)
@@ -154,6 +164,11 @@ def main() -> None:
     print(f"Before-event rows: {len(before_data):,} -> {before_path}")
     print(f"After-event rows: {len(after_data):,} -> {after_path}")
     print(f"Ticker universe -> {universe_path}")
+    if missing_tickers:
+        print(
+            f"\nWarning: Missing monthly price data for {len(missing_tickers)} tickers"
+        )
+        print("  " + ", ".join(missing_tickers))
     print("\nDate coverage:")
     print(
         f"  Before: {before_data['Date'].min().date()} to {before_data['Date'].max().date()}"

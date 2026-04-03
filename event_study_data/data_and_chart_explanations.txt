@@ -1,0 +1,193 @@
+Event Study Data and Chart Explanations (Bilingual)
+事件研究数据与图表说明（中英双语）
+
+====================================================================
+0. Event Setup / 事件设定
+====================================================================
+EN:
+- Event: Boeing 737 MAX global grounding.
+- Event date (Day 0): 2019-03-11.
+- Daily window: 2019-03-07 to 2019-03-13 (about -2 to +2 trading days).
+- Monthly windows:
+  - Before: 2014-03 to 2019-02
+  - After: 2019-03 to 2024-03
+- Groups: Treatment Big, Treatment Small, Control Big, Control Small.
+- Market benchmark: SPY.
+
+中文：
+- 事件：波音 737 MAX 全球停飞。
+- 事件日（Day 0）：2019-03-11。
+- 日频事件窗：2019-03-07 至 2019-03-13（约 -2 到 +2 个交易日）。
+- 月频窗口：
+  - 事前：2014-03 至 2019-02
+  - 事后：2019-03 至 2024-03
+- 分组：Treatment Big、Treatment Small、Control Big、Control Small。
+- 市场基准：SPY。
+
+====================================================================
+A. Core Data Files / 核心数据文件
+====================================================================
+
+1) ticker_universe.csv
+EN:
+- Contains ticker, company name, and group assignment for 30 firms + SPY.
+- Supports Q1.b and Q2.e (sample construction and group design).
+中文：
+- 包含 30 家样本公司 + SPY 的代码、名称和分组信息。
+- 对应作业 Q1.b、Q2.e（样本构建与分组设计）。
+
+2) event_window_daily_2019-03-07_to_2019-03-13.csv
+EN:
+- Daily OHLCV and returns in event window.
+- Includes Daily_Return, SPY_Return, Market_Adjusted_Return, Days_to_Event.
+- Supports Q1.c, Q1.d, Q1.e, Q1.f.
+中文：
+- 事件窗内日频 OHLCV 与收益数据。
+- 包含 Daily_Return、SPY_Return、Market_Adjusted_Return、Days_to_Event。
+- 对应 Q1.c、Q1.d、Q1.e、Q1.f。
+
+3) prices_before_2019-03-11.csv
+EN:
+- Monthly OHLCV for all stocks in the 5-year pre-event period.
+- Supports Q2.a, Q2.b, Q2.c.
+中文：
+- 全样本在事件前 5 年的月频 OHLCV。
+- 对应 Q2.a、Q2.b、Q2.c。
+
+4) prices_after_2019-03-11.csv
+EN:
+- Monthly OHLCV for all stocks in the 5-year post-event period.
+- Supports Q2.a, Q2.b, Q2.f.
+中文：
+- 全样本在事件后 5 年的月频 OHLCV。
+- 对应 Q2.a、Q2.b、Q2.f。
+
+5) event_window_daily_2019-03-07_to_2019-03-14.csv
+EN:
+- Legacy export from an older run, not used by current pipeline.
+- Keep only as archive/reference.
+中文：
+- 较早版本遗留的日频导出文件，不参与当前主流程。
+- 建议仅作归档或参考。
+
+====================================================================
+B. Analysis Tables / 分析结果表
+(path: event_study_data/analysis_results)
+====================================================================
+
+1) table_01_daily_aar_by_group_date.csv
+EN: Daily group AAR and volatility by date; supports Q1.e/Q1.f.
+中文：按日期、按组给出 AAR 及离散度；用于 Q1.e/Q1.f。
+
+2) table_02_daily_aar_ttest_vs_zero.csv
+EN: One-sample t-test of AAR vs 0 by date/group; supports Q1.e.
+中文：AAR 相对 0 的单样本 t 检验；用于 Q1.e。
+
+3) table_03_daily_stock_car.csv
+EN: Stock-level CAR metrics and worst abnormal day; supports Q1.e/Q1.f.
+中文：个股 CAR 指标及最差异常收益日；用于 Q1.e/Q1.f。
+
+4) table_04_daily_caar_ttest_by_group.csv
+EN: Group-level CAAR/CAR tests vs 0; supports Q1.e/Q1.f.
+中文：组别层面的 CAAR/CAR 显著性检验；用于 Q1.e/Q1.f。
+
+5) table_05_daily_treatment_vs_control_tests.csv
+EN: Welch tests for Treatment vs Control (by date + full window); supports Q1.f.
+中文：Treatment 与 Control 的 Welch 检验（按日+全窗口）；用于 Q1.f。
+
+6) table_06_monthly_stock_metrics_before_after.csv
+EN: Stock-level monthly mean/std/alpha/beta before and after; supports Q2.b/Q2.c.
+中文：个股月频均值、波动、alpha、beta（前后分期）；用于 Q2.b/Q2.c。
+
+7) table_07_monthly_group_metrics_2groups.csv
+EN: Monthly metrics aggregated by Treatment vs Control; supports Q2.d/Q2.f.
+中文：两组（Treatment/Control）月频汇总指标；用于 Q2.d/Q2.f。
+
+8) table_08_monthly_group_metrics_4groups.csv
+EN: Monthly metrics for 4 groups (Big/Small split); supports Q2.e/Q2.f.
+中文：四组（含大小市值）月频指标；用于 Q2.e/Q2.f。
+
+9) table_09_beta_explains_return_regression.csv
+EN: Cross-sectional regression: average return explained by beta (before/after); supports Q2.d.
+中文：横截面回归：beta 对平均收益解释力（前后分期）；用于 Q2.d。
+
+10) table_10_monthly_before_after_change_by_stock.csv
+EN: Stock-level delta in mean return/beta/alpha (After - Before); supports Q2.f.
+中文：个股事后-事前变化（收益、beta、alpha）；用于 Q2.f。
+
+====================================================================
+C. Visualization Numbering (Organized) / 图表编号整理（新版）
+====================================================================
+
+Folder structure / 文件夹结构：
+- event_study_data/visualizations/report
+- event_study_data/visualizations/legacy
+
+C1) Report charts (final, recommended) / 报告主图（建议正文使用）
+
+R01_aar_with_ci.png
+EN: Group daily AAR with 95% CI around event window.
+中文：事件窗内各组日度 AAR 及 95% 置信区间。
+Supports / 对应：Q1.e, Q1.f
+
+R02_caar_paths.png
+EN: CAAR path by group across event window.
+中文：各组在事件窗内的 CAAR 路径。
+Supports / 对应：Q1.f
+
+R03_treatment_control_diff.png
+EN: Treatment-Control abnormal return gap by day with p-values.
+中文：按日展示 Treatment-Control 异常收益差及 p 值。
+Supports / 对应：Q1.f
+
+R04_stock_car_distribution.png
+EN: CAR distribution by group (box + strip).
+中文：按组 CAR 分布图（箱线+散点）。
+Supports / 对应：Q1.e, Q1.f
+
+R05_group_risk_return_map.png
+EN: Group monthly risk-return map (Before vs After).
+中文：组别月频风险-收益散点图（前后对比）。
+Supports / 对应：Q2.f
+
+R06_beta_vs_return_stock_level.png
+EN: Beta vs mean return (stock level), before/after with trend lines.
+中文：个股层面 beta 与平均收益关系（前后分图+趋势线）。
+Supports / 对应：Q2.d
+
+R07_delta_mean_return_by_group.png
+EN: Distribution of change in mean monthly return (After - Before) by group.
+中文：按组展示平均月收益变化（事后-事前）分布。
+Supports / 对应：Q2.f
+
+C2) Legacy charts (exploratory) / 旧版探索图（备选）
+
+L01_daily_returns_by_group.png
+L02_market_adjusted_returns_by_group.png
+L03_group_comparison.png
+L04_heatmap_market_adjusted.png
+L05_individual_stocks_heatmap.png
+L06_cumulative_returns.png
+
+EN:
+- These legacy plots are useful for intuitive narrative.
+- Final report should prioritize R01-R07 for stronger statistical linkage.
+中文：
+- 旧版图适合做直观展示与补充叙述。
+- 正文建议优先使用 R01-R07，以保持与统计检验的一致性。
+
+====================================================================
+D. Suggested Report Mapping / 报告引用建议（按题目映射）
+====================================================================
+
+Q1 (event study reaction and sensitivity)
+- Tables: table_01, table_05, table_03, table_04
+- Charts: R01, R02, R03, R04
+
+Q2 (monthly risk-return, beta, group comparison)
+- Tables: table_06, table_07, table_08, table_09, table_10
+- Charts: R05, R06, R07
+
+Strategy recommendation (Q2.f)
+- Use short-run treatment-control gap (table_05 + R03)
+- and post-event risk-return shifts (table_07/table_08/table_10 + R05/R07)

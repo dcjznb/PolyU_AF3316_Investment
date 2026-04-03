@@ -1,32 +1,32 @@
 ticker,name,group
-USB,U.S. Bancorp,Treatment Big
-PNC,PNC Financial Services,Treatment Big
-TFC,Truist Financial,Treatment Big
-FITB,Fifth Third Bancorp,Treatment Big
-CFG,Citizens Financial Group,Treatment Big
-MTB,M&T Bank,Treatment Big
-HBAN,Huntington Bancshares,Treatment Big
-ZION,Zions Bancorporation,Treatment Small
-CMA,Comerica,Treatment Small
-KEY,KeyCorp,Treatment Small
-WAL,Western Alliance Bancorporation,Treatment Small
-BOKF,BOK Financial,Treatment Small
-FHN,First Horizon,Treatment Small
-PB,Prosperity Bancshares,Treatment Small
-EWBC,East West Bancorp,Treatment Small
-JPM,JPMorgan Chase,Control Big
-BAC,Bank of America,Control Big
-WFC,Wells Fargo,Control Big
-C,Citigroup,Control Big
-MS,Morgan Stanley,Control Big
-GS,Goldman Sachs,Control Big
-BX,Blackstone,Control Big
-BLK,BlackRock,Control Big
-COF,Capital One Financial,Control Small
-SYF,Synchrony Financial,Control Small
-ALL,Allstate,Control Small
-TRV,Travelers,Control Small
-PRU,Prudential Financial,Control Small
-MET,MetLife,Control Small
-HIG,The Hartford,Control Small
+BA,Boeing,Treatment Big
+GE,General Electric,Treatment Big
+LUV,Southwest Airlines,Treatment Big
+AAL,American Airlines,Treatment Big
+UAL,United Airlines,Treatment Big
+TDG,TransDigm Group,Treatment Big
+HEI,HEICO,Treatment Big
+RYAAY,Ryanair Holdings ADR,Treatment Big
+ATRO,Astronics,Treatment Small
+ALK,Alaska Air Group,Treatment Small
+HXL,Hexcel,Treatment Small
+WWD,Woodward,Treatment Small
+ATI,ATI,Treatment Small
+MOG-A,Moog Class A,Treatment Small
+AER,AerCap,Treatment Small
+DAL,Delta Air Lines,Control Big
+LMT,Lockheed Martin,Control Big
+NOC,Northrop Grumman,Control Big
+GD,General Dynamics,Control Big
+HON,Honeywell,Control Big
+FDX,FedEx,Control Big
+UPS,United Parcel Service,Control Big
+CSX,CSX,Control Big
+JBLU,JetBlue Airways,Control Small
+VLRS,Controladora Vuela ADR,Control Small
+SKYW,SkyWest,Control Small
+ALGT,Allegiant Travel,Control Small
+HII,Huntington Ingalls Industries,Control Small
+TXT,Textron,Control Small
+LHX,L3Harris Technologies,Control Small
 SPY,SPDR S&P 500 ETF Trust,Benchmark

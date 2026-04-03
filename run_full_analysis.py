@@ -8,7 +8,7 @@ from scipy import stats
 import statsmodels.api as sm
 
 
-EVENT_DATE = pd.Timestamp("2023-03-10")
+EVENT_DATE = pd.Timestamp("2019-03-11")
 
 
 def safe_ttest_1samp(series: pd.Series, popmean: float = 0.0) -> tuple[float, float]:
@@ -332,9 +332,9 @@ def main() -> None:
     out_dir = data_dir / "analysis_results"
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    daily = pd.read_csv(data_dir / "event_window_daily_2023-03-08_to_2023-03-12.csv")
-    monthly_before = pd.read_csv(data_dir / "prices_before_2023-03-10.csv")
-    monthly_after = pd.read_csv(data_dir / "prices_after_2023-03-10.csv")
+    daily = pd.read_csv(data_dir / "event_window_daily_2019-03-07_to_2019-03-13.csv")
+    monthly_before = pd.read_csv(data_dir / "prices_before_2019-03-11.csv")
+    monthly_after = pd.read_csv(data_dir / "prices_after_2019-03-11.csv")
     universe = pd.read_csv(data_dir / "ticker_universe.csv")
 
     run_daily_event_analysis(daily, out_dir)
