@@ -8,8 +8,8 @@
 你只要按下面 5 步做，就能写完报告主干：
 
 第 1 步：先看样本分组
-- 文件：ticker_universe.csv
-- 任务：确认 30 家、4 组（Treatment Big/Small, Control Big/Small）
+- 文件：event_study_data/ticker_universe.csv
+- 任务：确认 30 家航空公司、4 组（Treatment Big/Small, Control Big/Small）
 
 第 2 步：先写 Q1（短期事件研究）
 - 核心表：table_01, table_04, table_05
@@ -27,6 +27,7 @@
 - 事件日统一写 2019-03-11
 - 事件窗统一写 -2 到 +2 交易日
 - 市场调整收益统一写 AR = Stock Return - SPY Return
+- 当前数据完整性：事件窗 150 行（30*5），月频 before 1854 行、after 1860 行
 
 
 ====================================================================
@@ -44,7 +45,7 @@
 - 日频事件窗：2019-03-07 至 2019-03-13（-2 至 +2 交易日）
 - 月频长期窗：
   - 事前：2014-03 至 2019-02
-  - 事后：2019-03 至 2024-03
+  - 事后：2019-04 至 2024-03
 
 市场基准：SPY
 
@@ -55,41 +56,41 @@
 
 Treatment Big（8）
 1. THYAO.IS  Turkish Airlines
-2. RYAAY     Ryanair Holdings
-3. UAL       United Airlines Holdings
-4. ICAGY     International Consolidated Airlines Group ADR
-5. LUV       Southwest Airlines
-6. NAS.OL    Norwegian Air Shuttle
-7. AAL       American Airlines Group
-8. AC.TO     Air Canada
+2. 0670.HK   China Eastern Airlines
+3. 1055.HK   China Southern Airlines
+4. RYAAY     Ryanair Holdings
+5. UAL       United Airlines Holdings
+6. LUV       Southwest Airlines
+7. NAS.OL    Norwegian Air Shuttle
+8. AAL       American Airlines Group
 
 Treatment Small（7）
-1. CPA       Copa Holdings
-2. ALK       Alaska Air Group
-3. TUI1.DE   TUI Group
-4. JET2.L    Jet2 plc
-5. ALGT      Allegiant Travel
-6. AAVVF     Avianca Holdings SA
-7. CHR.TO    Chorus Aviation
+1. AC.TO     Air Canada
+2. CPA       Copa Holdings
+3. ALK       Alaska Air Group
+4. TUI1.DE   TUI Group
+5. JET2.L    Jet2 plc
+6. JBLU      JetBlue Airways
+7. AAVVF     Avianca Holdings SA
 
 Control Big（8）
 1. LTM.SN    LATAM Airlines Group
 2. 9202.T    ANA Holdings
 3. 9201.T    Japan Airlines
-4. 0670.HK   China Eastern Airlines
-5. 1055.HK   China Southern Airlines
-6. 0293.HK   Cathay Pacific Airways
-7. DAL       Delta Air Lines
-8. C6L.SI    Singapore Airlines
+4. 0293.HK   Cathay Pacific Airways
+5. DAL       Delta Air Lines
+6. C6L.SI    Singapore Airlines
+7. IAG.L     International Airlines Group
+8. QAN.AX    Qantas Airways
 
 Control Small（7）
-1. IAG.L     International Airlines Group
-2. QAN.AX    Qantas Airways
-3. LHA.DE    Lufthansa Group
-4. EZJ.L     easyJet
-5. AF.PA     Air France-KLM
-6. AIR.NZ    Air New Zealand
-7. WIZZ.L    Wizz Air Holdings
+1. LHA.DE    Lufthansa Group
+2. EZJ.L     easyJet
+3. AF.PA     Air France-KLM
+4. AIR.NZ    Air New Zealand
+5. WIZZ.L    Wizz Air Holdings
+6. ALGT      Allegiant Travel
+7. CHR.TO    Chorus Aviation
 
 Benchmark
 - SPY
@@ -100,6 +101,10 @@ Benchmark
 ====================================================================
 
 主目录：event_study_data
+
+并行写作推荐目录：
+- 短期材料：event_study_data/outputs_short_term
+- 长期材料：event_study_data/outputs_long_term
 
 数据文件：
 1) ticker_universe.csv
@@ -189,12 +194,13 @@ Q1e 事件期市场反应
 - 图：R01, R02, R03, R04
 
 必须写的关键结果：
-- FullWindow 组间差：Diff = -0.005405, p = 0.0479（显著）
-- Day 0 组间差：Diff = -0.010478, p = 0.0849（边际显著）
-- Day +1 组间差：Diff = -0.019017, p = 0.000301（高度显著）
+- FullWindow 组间差：Diff = -0.005990, p = 0.0272（显著）
+- Day -2 组间差：Diff = -0.014474, p = 0.0122（显著）
+- Day 0 组间差：Diff = -0.009717, p = 0.1218（不显著）
+- Day +1 组间差：Diff = -0.010038, p = 0.0818（边际显著）
 
 一句话模板：
-- 事件窗口内 Treatment 相对 Control 的异常收益更负，且全窗口差异达到统计显著。
+- 事件窗口内 Treatment 相对 Control 的异常收益整体更负，全窗口差异显著，冲击主要集中在事件前后相邻交易日。
 
 
 -------------------------
@@ -205,12 +211,13 @@ Q1f 哪类股票更敏感
 - R03
 
 必须写的关键结果：
-- Treatment Big: CAAR 均值 -0.0740, p = 0.0030（最敏感）
-- Treatment Small: CAAR 均值 -0.0313, p = 0.0027
-- Control Big: 不显著
+- Treatment Big: CAAR 均值 -0.0775, p = 0.0020（最敏感）
+- Treatment Small: CAAR 均值 -0.0251, p = 0.0276
+- Control Small: CAAR 均值 -0.0345, p = 0.0093
+- Control Big: CAAR 均值 -0.0132, p = 0.3619（不显著）
 
 一句话模板：
-- 高暴露组对冲击更敏感，且大市值高暴露组合的负向反应最强。
+- 高暴露大市值组负向冲击最强；同时 Control Small 也出现显著下跌，说明事件期存在一定行业层面的共振压力。
 
 
 -------------------------
@@ -252,8 +259,8 @@ Q2d beta 是否解释个股平均收益
 - R06
 
 必须写的关键结果：
-- Before：beta p = 0.3399（不显著）
-- After：beta p = 0.6838（不显著）
+- Before：beta p = 0.3398（不显著）
+- After：beta p = 0.6019（不显著）
 
 一句话模板：
 - 在本样本中，beta 不能稳定解释横截面平均收益。
@@ -292,13 +299,13 @@ Q2f 四组分析与策略建议
 ====================================================================
 
 结论 1（短期）：
-737 MAX 停飞事件对高暴露航空股造成更强负向冲击。Treatment 相对 Control 在全事件窗差异显著（p < 0.05）。
+737 MAX 停飞事件对高暴露航空股造成更强负向冲击。Treatment 相对 Control 在全事件窗差异显著（Diff=-0.005990, p=0.0272）。
 
 结论 2（敏感性）：
-Treatment Big 对冲击最敏感，Treatment Small 次之；Control 组整体冲击较弱或恢复更快。
+Treatment Big 对冲击最敏感（CAAR=-0.0775, p=0.0020），Treatment Small 次之；但 Control Small 也出现显著负向反应，提示行业共振冲击。
 
 结论 3（长期）：
-事件后风险收益关系发生重排，但 beta 对横截面平均收益解释力不显著，不能作为单一解释变量。
+事件后风险收益关系发生重排，但 beta 在 before/after 两期均不显著（p=0.3398 与 0.6019），不能作为单一解释变量。
 
 结论 4（投资建议）：
 短期可用事件驱动对冲策略；中长期应采用分组内精选，而非单纯按 beta 配置。
