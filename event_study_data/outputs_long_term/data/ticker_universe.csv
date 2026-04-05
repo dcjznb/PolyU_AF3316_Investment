@@ -1,0 +1,32 @@
+ticker,name,group
+THYAO.IS,Turkish Airlines,Treatment Big
+RYAAY,Ryanair Holdings,Treatment Big
+UAL,United Airlines Holdings,Treatment Big
+ICAGY,International Consolidated Airlines Group ADR,Treatment Big
+LUV,Southwest Airlines,Treatment Big
+NAS.OL,Norwegian Air Shuttle,Treatment Big
+AAL,American Airlines Group,Treatment Big
+AC.TO,Air Canada,Treatment Big
+CPA,Copa Holdings,Treatment Small
+ALK,Alaska Air Group,Treatment Small
+TUI1.DE,TUI Group,Treatment Small
+JET2.L,Jet2 plc,Treatment Small
+ALGT,Allegiant Travel,Treatment Small
+AAVVF,Avianca Holdings SA,Treatment Small
+CHR.TO,Chorus Aviation,Treatment Small
+LTM.SN,LATAM Airlines Group,Control Big
+9202.T,ANA Holdings,Control Big
+9201.T,Japan Airlines,Control Big
+0670.HK,China Eastern Airlines,Control Big
+1055.HK,China Southern Airlines,Control Big
+0293.HK,Cathay Pacific Airways,Control Big
+DAL,Delta Air Lines,Control Big
+C6L.SI,Singapore Airlines,Control Big
+IAG.L,International Airlines Group,Control Small
+QAN.AX,Qantas Airways,Control Small
+LHA.DE,Lufthansa Group,Control Small
+EZJ.L,easyJet,Control Small
+AF.PA,Air France-KLM,Control Small
+AIR.NZ,Air New Zealand,Control Small
+WIZZ.L,Wizz Air Holdings,Control Small
+SPY,SPDR S&P 500 ETF Trust,Benchmark
