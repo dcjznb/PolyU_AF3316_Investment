@@ -1,32 +1,32 @@
 ticker,name,group
-THYAO.IS,Turkish Airlines,Treatment Big
-0670.HK,China Eastern Airlines,Treatment Big
-1055.HK,China Southern Airlines,Treatment Big
-RYAAY,Ryanair Holdings,Treatment Big
-UAL,United Airlines Holdings,Treatment Big
-LUV,Southwest Airlines,Treatment Big
-NAS.OL,Norwegian Air Shuttle,Treatment Big
-AAL,American Airlines Group,Treatment Big
-AC.TO,Air Canada,Treatment Small
-CPA,Copa Holdings,Treatment Small
-ALK,Alaska Air Group,Treatment Small
-TUI1.DE,TUI Group,Treatment Small
-JET2.L,Jet2 plc,Treatment Small
-JBLU,JetBlue Airways,Treatment Small
-AAVVF,Avianca Holdings SA,Treatment Small
-LTM.SN,LATAM Airlines Group,Control Big
-9202.T,ANA Holdings,Control Big
-9201.T,Japan Airlines,Control Big
-0293.HK,Cathay Pacific Airways,Control Big
-DAL,Delta Air Lines,Control Big
-C6L.SI,Singapore Airlines,Control Big
-IAG.L,International Airlines Group,Control Big
-QAN.AX,Qantas Airways,Control Big
-LHA.DE,Lufthansa Group,Control Small
-EZJ.L,easyJet,Control Small
-AF.PA,Air France-KLM,Control Small
-AIR.NZ,Air New Zealand,Control Small
-WIZZ.L,Wizz Air Holdings,Control Small
-ALGT,Allegiant Travel,Control Small
-CHR.TO,Chorus Aviation,Control Small
+ISRG,Intuitive Surgical,Treatment Big
+DXCM,DexCom,Treatment Big
+RMD,ResMed,Treatment Big
+PODD,Insulet,Treatment Big
+MASI,Masimo,Treatment Big
+DVA,DaVita,Treatment Big
+PEN,Penumbra,Treatment Big
+INSP,Inspire Medical Systems,Treatment Big
+TNDM,Tandem Diabetes Care,Treatment Small
+OM,Outset Medical,Treatment Small
+IRTC,iRhythm Technologies,Treatment Small
+EW,Edwards Lifesciences,Treatment Small
+MMSI,Merit Medical Systems,Treatment Small
+LMAT,LeMaitre Vascular,Treatment Small
+ANGO,AngioDynamics,Treatment Small
+JNJ,Johnson & Johnson,Control Big
+TMO,Thermo Fisher Scientific,Control Big
+DHR,Danaher,Control Big
+ZTS,Zoetis,Control Big
+IDXX,IDEXX Laboratories,Control Big
+COO,Cooper Companies,Control Big
+ALGN,Align Technology,Control Big
+BSX,Boston Scientific,Control Big
+XRAY,Dentsply Sirona,Control Small
+HAE,Haemonetics,Control Small
+CERT,Certara,Control Small
+NEO,NeoGenomics,Control Small
+CSTL,Castle Biosciences,Control Small
+GH,Guardant Health,Control Small
+STAA,STAAR Surgical,Control Small
 SPY,SPDR S&P 500 ETF Trust,Benchmark

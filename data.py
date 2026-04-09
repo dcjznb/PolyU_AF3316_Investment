@@ -6,42 +6,42 @@ import pandas as pd
 import yfinance as yf
 
 
-START_DATE = "2014-03-01"
-END_DATE = "2024-04-01"
-EVENT_DATE = pd.Timestamp("2019-03-11")
+START_DATE = "2017-01-01"
+END_DATE = (pd.Timestamp.today() + pd.Timedelta(days=1)).strftime("%Y-%m-%d")
+EVENT_DATE = pd.Timestamp("2023-08-08")
 
 
 UNIVERSE = [
-    {"ticker": "THYAO.IS", "name": "Turkish Airlines", "group": "Treatment Big"},
-    {"ticker": "0670.HK", "name": "China Eastern Airlines", "group": "Treatment Big"},
-    {"ticker": "1055.HK", "name": "China Southern Airlines", "group": "Treatment Big"},
-    {"ticker": "RYAAY", "name": "Ryanair Holdings", "group": "Treatment Big"},
-    {"ticker": "UAL", "name": "United Airlines Holdings", "group": "Treatment Big"},
-    {"ticker": "LUV", "name": "Southwest Airlines", "group": "Treatment Big"},
-    {"ticker": "NAS.OL", "name": "Norwegian Air Shuttle", "group": "Treatment Big"},
-    {"ticker": "AAL", "name": "American Airlines Group", "group": "Treatment Big"},
-    {"ticker": "AC.TO", "name": "Air Canada", "group": "Treatment Small"},
-    {"ticker": "CPA", "name": "Copa Holdings", "group": "Treatment Small"},
-    {"ticker": "ALK", "name": "Alaska Air Group", "group": "Treatment Small"},
-    {"ticker": "TUI1.DE", "name": "TUI Group", "group": "Treatment Small"},
-    {"ticker": "JET2.L", "name": "Jet2 plc", "group": "Treatment Small"},
-    {"ticker": "JBLU", "name": "JetBlue Airways", "group": "Treatment Small"},
-    {"ticker": "AAVVF", "name": "Avianca Holdings SA", "group": "Treatment Small"},
-    {"ticker": "LTM.SN", "name": "LATAM Airlines Group", "group": "Control Big"},
-    {"ticker": "9202.T", "name": "ANA Holdings", "group": "Control Big"},
-    {"ticker": "9201.T", "name": "Japan Airlines", "group": "Control Big"},
-    {"ticker": "0293.HK", "name": "Cathay Pacific Airways", "group": "Control Big"},
-    {"ticker": "DAL", "name": "Delta Air Lines", "group": "Control Big"},
-    {"ticker": "C6L.SI", "name": "Singapore Airlines", "group": "Control Big"},
-    {"ticker": "IAG.L", "name": "International Airlines Group", "group": "Control Big"},
-    {"ticker": "QAN.AX", "name": "Qantas Airways", "group": "Control Big"},
-    {"ticker": "LHA.DE", "name": "Lufthansa Group", "group": "Control Small"},
-    {"ticker": "EZJ.L", "name": "easyJet", "group": "Control Small"},
-    {"ticker": "AF.PA", "name": "Air France-KLM", "group": "Control Small"},
-    {"ticker": "AIR.NZ", "name": "Air New Zealand", "group": "Control Small"},
-    {"ticker": "WIZZ.L", "name": "Wizz Air Holdings", "group": "Control Small"},
-    {"ticker": "ALGT", "name": "Allegiant Travel", "group": "Control Small"},
-    {"ticker": "CHR.TO", "name": "Chorus Aviation", "group": "Control Small"},
+    {"ticker": "ISRG", "name": "Intuitive Surgical", "group": "Treatment Big"},
+    {"ticker": "DXCM", "name": "DexCom", "group": "Treatment Big"},
+    {"ticker": "RMD", "name": "ResMed", "group": "Treatment Big"},
+    {"ticker": "PODD", "name": "Insulet", "group": "Treatment Big"},
+    {"ticker": "MASI", "name": "Masimo", "group": "Treatment Big"},
+    {"ticker": "DVA", "name": "DaVita", "group": "Treatment Big"},
+    {"ticker": "PEN", "name": "Penumbra", "group": "Treatment Big"},
+    {"ticker": "INSP", "name": "Inspire Medical Systems", "group": "Treatment Big"},
+    {"ticker": "TNDM", "name": "Tandem Diabetes Care", "group": "Treatment Small"},
+    {"ticker": "OM", "name": "Outset Medical", "group": "Treatment Small"},
+    {"ticker": "IRTC", "name": "iRhythm Technologies", "group": "Treatment Small"},
+    {"ticker": "EW", "name": "Edwards Lifesciences", "group": "Treatment Small"},
+    {"ticker": "MMSI", "name": "Merit Medical Systems", "group": "Treatment Small"},
+    {"ticker": "LMAT", "name": "LeMaitre Vascular", "group": "Treatment Small"},
+    {"ticker": "ANGO", "name": "AngioDynamics", "group": "Treatment Small"},
+    {"ticker": "JNJ", "name": "Johnson & Johnson", "group": "Control Big"},
+    {"ticker": "TMO", "name": "Thermo Fisher Scientific", "group": "Control Big"},
+    {"ticker": "DHR", "name": "Danaher", "group": "Control Big"},
+    {"ticker": "ZTS", "name": "Zoetis", "group": "Control Big"},
+    {"ticker": "IDXX", "name": "IDEXX Laboratories", "group": "Control Big"},
+    {"ticker": "COO", "name": "Cooper Companies", "group": "Control Big"},
+    {"ticker": "ALGN", "name": "Align Technology", "group": "Control Big"},
+    {"ticker": "BSX", "name": "Boston Scientific", "group": "Control Big"},
+    {"ticker": "XRAY", "name": "Dentsply Sirona", "group": "Control Small"},
+    {"ticker": "HAE", "name": "Haemonetics", "group": "Control Small"},
+    {"ticker": "CERT", "name": "Certara", "group": "Control Small"},
+    {"ticker": "NEO", "name": "NeoGenomics", "group": "Control Small"},
+    {"ticker": "CSTL", "name": "Castle Biosciences", "group": "Control Small"},
+    {"ticker": "GH", "name": "Guardant Health", "group": "Control Small"},
+    {"ticker": "STAA", "name": "STAAR Surgical", "group": "Control Small"},
     {"ticker": "SPY", "name": "SPDR S&P 500 ETF Trust", "group": "Benchmark"},
 ]
 
