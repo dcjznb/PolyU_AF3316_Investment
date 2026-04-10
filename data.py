@@ -17,12 +17,12 @@ UNIVERSE = [
     {"ticker": "RMD", "name": "ResMed", "group": "Treatment Big"},
     {"ticker": "PODD", "name": "Insulet", "group": "Treatment Big"},
     {"ticker": "MASI", "name": "Masimo", "group": "Treatment Big"},
-    {"ticker": "DVA", "name": "DaVita", "group": "Treatment Big"},
+    {"ticker": "MDT", "name": "Medtronic", "group": "Treatment Big"},
     {"ticker": "PEN", "name": "Penumbra", "group": "Treatment Big"},
     {"ticker": "INSP", "name": "Inspire Medical Systems", "group": "Treatment Big"},
     {"ticker": "TNDM", "name": "Tandem Diabetes Care", "group": "Treatment Small"},
     {"ticker": "OM", "name": "Outset Medical", "group": "Treatment Small"},
-    {"ticker": "IRTC", "name": "iRhythm Technologies", "group": "Treatment Small"},
+    {"ticker": "CNMD", "name": "CONMED", "group": "Treatment Small"},
     {"ticker": "EW", "name": "Edwards Lifesciences", "group": "Treatment Small"},
     {"ticker": "MMSI", "name": "Merit Medical Systems", "group": "Treatment Small"},
     {"ticker": "LMAT", "name": "LeMaitre Vascular", "group": "Treatment Small"},
@@ -147,8 +147,8 @@ def main() -> None:
     available_tickers = set(full_data["Ticker"].unique())
     missing_tickers = [t for t in tickers if t not in available_tickers and t != "SPY"]
 
-    before_path = output_dir / "prices_before_2019-03-11.csv"
-    after_path = output_dir / "prices_after_2019-03-11.csv"
+    before_path = output_dir / "prices_before_2023-08-08.csv"
+    after_path = output_dir / "prices_after_2023-08-08.csv"
     universe_path = output_dir / "ticker_universe.csv"
 
     before_data.to_csv(before_path, index=False)

@@ -333,8 +333,8 @@ def main() -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
 
     daily = pd.read_csv(data_dir / "event_window_daily_2023-08-04_to_2023-08-10.csv")
-    monthly_before = pd.read_csv(data_dir / "prices_before_2019-03-11.csv")
-    monthly_after = pd.read_csv(data_dir / "prices_after_2019-03-11.csv")
+    monthly_before = pd.read_csv(data_dir / "prices_before_2023-08-08.csv")
+    monthly_after = pd.read_csv(data_dir / "prices_after_2023-08-08.csv")
     universe = pd.read_csv(data_dir / "ticker_universe.csv")
 
     run_daily_event_analysis(daily, out_dir)

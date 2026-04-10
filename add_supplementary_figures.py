@@ -29,8 +29,8 @@ def save_fig(file_name: str) -> None:
 
 
 def build_excess_sharpe_4groups_symmetric_window() -> pd.DataFrame:
-    before = pd.read_csv(DATA_DIR / "prices_before_2019-03-11.csv")
-    after = pd.read_csv(DATA_DIR / "prices_after_2019-03-11.csv")
+    before = pd.read_csv(DATA_DIR / "prices_before_2023-08-08.csv")
+    after = pd.read_csv(DATA_DIR / "prices_after_2023-08-08.csv")
     monthly = pd.concat([before, after], ignore_index=True)
 
     monthly["Date"] = pd.to_datetime(monthly["Date"])
