@@ -205,6 +205,99 @@ def _trimmed_decimal_axis(x: float, _pos: float) -> str:
     return f"{x:.2f}".rstrip("0").rstrip(".")
 
 
+def _annotate_nonoverlap_labels(
+    ax: plt.Axes,
+    x_vals: np.ndarray,
+    y_vals: np.ndarray,
+    labels: list[str],
+) -> None:
+    points = np.column_stack([x_vals, y_vals])
+    trans = ax.transData
+    inv = trans.inverted()
+    anchor = trans.transform(points)
+
+    base_offsets = np.array(
+        [
+            [10.0, 8.0],
+            [10.0, -8.0],
+            [-10.0, 8.0],
+            [-10.0, -8.0],
+            [14.0, 0.0],
+            [-14.0, 0.0],
+            [0.0, 11.0],
+            [0.0, -11.0],
+        ]
+    )
+    text_pos = anchor + np.array(
+        [base_offsets[i % len(base_offsets)] for i in range(len(labels))]
+    )
+
+    widths = np.array([max(24.0, len(t) * 6.6 + 10.0) for t in labels])
+    heights = np.full(len(labels), 14.0)
+
+    bbox = ax.get_window_extent()
+    x_min, x_max = bbox.x0 + 6.0, bbox.x1 - 6.0
+    y_min, y_max = bbox.y0 + 6.0, bbox.y1 - 6.0
+
+    preferred = anchor + np.array(
+        [base_offsets[i % len(base_offsets)] for i in range(len(labels))]
+    )
+
+    for _ in range(220):
+        moved = False
+        for i in range(len(labels)):
+            for j in range(i + 1, len(labels)):
+                dx = text_pos[i, 0] - text_pos[j, 0]
+                dy = text_pos[i, 1] - text_pos[j, 1]
+                overlap_x = (widths[i] + widths[j]) * 0.5 - abs(dx)
+                overlap_y = (heights[i] + heights[j]) * 0.5 - abs(dy)
+                if overlap_x > 0 and overlap_y > 0:
+                    sign_x = 1.0 if dx >= 0 else -1.0
+                    sign_y = 1.0 if dy >= 0 else -1.0
+                    if abs(dx) < 1.0:
+                        sign_x = 1.0 if i % 2 == 0 else -1.0
+                    if abs(dy) < 1.0:
+                        sign_y = 1.0 if i % 2 == 0 else -1.0
+
+                    push_x = sign_x * overlap_x * 0.26
+                    push_y = sign_y * overlap_y * 0.26
+                    text_pos[i, 0] += push_x
+                    text_pos[j, 0] -= push_x
+                    text_pos[i, 1] += push_y
+                    text_pos[j, 1] -= push_y
+                    moved = True
+
+        # Keep labels near anchor while allowing repulsion.
+        text_pos += (preferred - text_pos) * 0.055
+
+        text_pos[:, 0] = np.clip(text_pos[:, 0], x_min, x_max)
+        text_pos[:, 1] = np.clip(text_pos[:, 1], y_min, y_max)
+
+        if not moved:
+            break
+
+    for i, (x, y, label) in enumerate(zip(x_vals, y_vals, labels)):
+        tx, ty = inv.transform(text_pos[i])
+        ax.annotate(
+            label,
+            xy=(x, y),
+            xytext=(tx, ty),
+            textcoords="data",
+            fontsize=8,
+            color="#666666",
+            ha="center",
+            va="center",
+            bbox={
+                "boxstyle": "round,pad=0.15",
+                "fc": "white",
+                "ec": "none",
+                "alpha": 0.72,
+            },
+            arrowprops={"arrowstyle": "-", "color": "#9a9a9a", "lw": 0.6, "alpha": 0.8},
+            zorder=4,
+        )
+
+
 def _plot_beta_return_panel(
     ax: plt.Axes,
     beta: np.ndarray,
@@ -217,8 +310,8 @@ def _plot_beta_return_panel(
     capm = intercept_er + slope_er * beta
     slope_capm, intercept_capm = np.polyfit(beta, capm, 1)
 
-    ax.scatter(beta, er, s=28, color="#0B789B", label=er_label, zorder=3)
-    ax.scatter(beta, capm, s=24, color="#FF6A00", label="CAPM", zorder=2)
+    ax.scatter(beta, er, s=36, color="#0B789B", label=er_label, zorder=3)
+    ax.scatter(beta, capm, s=30, color="#FF6A00", label="CAPM", zorder=2)
 
     x_line = np.linspace(float(np.min(beta)), float(np.max(beta)), 120)
     ax.plot(
@@ -240,27 +333,30 @@ def _plot_beta_return_panel(
         zorder=1,
     )
 
-    for x, y, t in zip(beta, er, labels):
-        ax.annotate(
-            t,
-            xy=(x, y),
-            xytext=(7, 4),
-            textcoords="offset points",
-            fontsize=8,
-            color="#666666",
-        )
+    # Mark the orange fitted CAPM trend as the SML line.
+    x_sml = float(x_line[int(len(x_line) * 0.8)])
+    y_sml = float(intercept_capm + slope_capm * x_sml)
+    ax.annotate(
+        "SML Line",
+        xy=(x_sml, y_sml),
+        xytext=(8, -10),
+        textcoords="offset points",
+        fontsize=8,
+        color="#FF8A4C",
+        fontweight="bold",
+    )
 
     x_min = float(np.min(beta))
     x_max = float(np.max(beta))
-    x_pad = max(0.03, (x_max - x_min) * 0.08)
+    x_pad = max(0.04, (x_max - x_min) * 0.12)
 
     y_min = float(np.min(np.concatenate([er, capm])))
     y_max = float(np.max(np.concatenate([er, capm])))
-    y_pad = max(0.01, (y_max - y_min) * 0.2)
+    y_pad = max(0.012, (y_max - y_min) * 0.24)
 
     ax.set_xlim(x_min - x_pad, x_max + x_pad)
     ax.set_ylim(y_min - y_pad, y_max + y_pad)
-    ax.set_title(title, fontsize=14)
+    ax.set_title(title, fontsize=16)
     ax.set_xlabel("Beta")
     ax.set_ylabel("E(r)")
 
@@ -273,14 +369,17 @@ def _plot_beta_return_panel(
     ax.xaxis.set_major_formatter(FuncFormatter(_beta_axis_4dp))
     ax.yaxis.set_major_formatter(FuncFormatter(_return_axis_4dp))
     ax.tick_params(axis="both", length=0)
+
+    _annotate_nonoverlap_labels(ax, beta, er, labels)
+
     ax.legend(
         loc="lower center",
-        bbox_to_anchor=(0.5, -0.24),
+        bbox_to_anchor=(0.5, -0.28),
         ncol=4,
         frameon=False,
         handlelength=2.8,
         columnspacing=1.4,
-        fontsize=8,
+        fontsize=10,
     )
 
 
@@ -293,7 +392,7 @@ def plot_figure_03() -> Path:
     er_after = df["mean_return_after"].to_numpy(dtype=float)
     labels = df["Ticker"].to_list()
 
-    fig, axes = plt.subplots(1, 2, figsize=(14, 5.2), sharey=False)
+    fig, axes = plt.subplots(1, 2, figsize=(17, 7.2), sharey=False)
     fig.patch.set_facecolor("#f2f2f2")
 
     _plot_beta_return_panel(
@@ -302,7 +401,7 @@ def plot_figure_03() -> Path:
         er_before,
         labels,
         "Treatment & Control Before the Event",
-        "er before",
+        "E(r)",
     )
     _plot_beta_return_panel(
         axes[1],
@@ -310,12 +409,12 @@ def plot_figure_03() -> Path:
         er_after,
         labels,
         "Treatment & Control After the Event",
-        "er",
+        "E(r)",
     )
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     out_file = OUT_DIR / "Figure_03_beta_vs_expected_return_before_after.png"
-    fig.tight_layout(w_pad=2.0)
+    fig.tight_layout(w_pad=2.8)
     fig.savefig(out_file, dpi=300, bbox_inches="tight", facecolor=fig.get_facecolor())
     plt.close(fig)
     return out_file
@@ -425,8 +524,8 @@ def _plot_group_period_scatter(
     slope_er, intercept_er = np.polyfit(beta, er, 1)
     slope_capm, intercept_capm = np.polyfit(beta, capm, 1)
 
-    ax.scatter(beta, er, s=24, color="#0B789B", label="er", zorder=3)
-    ax.scatter(beta, capm, s=20, color="#FF6A00", label="CAPM", zorder=2)
+    ax.scatter(beta, er, s=30, color="#0B789B", label="E(r)", zorder=3)
+    ax.scatter(beta, capm, s=26, color="#FF6A00", label="CAPM", zorder=2)
 
     x_line = np.linspace(float(np.min(beta)), float(np.max(beta)), 120)
     ax.plot(
@@ -435,7 +534,7 @@ def _plot_group_period_scatter(
         color="#2D8DB5",
         linestyle=(0, (1.2, 1.2)),
         linewidth=1.0,
-        label="Linear (er)",
+        label="Linear (E(r))",
         zorder=1,
     )
     ax.plot(
@@ -446,6 +545,19 @@ def _plot_group_period_scatter(
         linewidth=1.0,
         label="Linear (CAPM)",
         zorder=1,
+    )
+
+    # Mark the orange fitted CAPM trend as the SML line.
+    x_sml = float(x_line[int(len(x_line) * 0.8)])
+    y_sml = float(intercept_capm + slope_capm * x_sml)
+    ax.annotate(
+        "SML Line",
+        xy=(x_sml, y_sml),
+        xytext=(8, -8),
+        textcoords="offset points",
+        fontsize=8,
+        color="#FF8A4C",
+        fontweight="bold",
     )
 
     for x, y, t in zip(beta, er, labels):
@@ -460,11 +572,15 @@ def _plot_group_period_scatter(
 
     x_min = float(np.min(beta))
     x_max = float(np.max(beta))
-    x_pad = max(0.03, (x_max - x_min) * 0.10)
+    x_pad = max(0.02, (x_max - x_min) * 0.06)
     ax.set_xlim(x_min - x_pad, x_max + x_pad)
 
-    y_min = min(float(np.min(np.concatenate([er, capm]))) - 0.01, -0.12)
-    y_max = max(float(np.max(np.concatenate([er, capm]))) + 0.01, 0.04)
+    y_all = np.concatenate([er, capm])
+    y_min_raw = float(np.min(y_all))
+    y_max_raw = float(np.max(y_all))
+    y_pad = max(0.006, (y_max_raw - y_min_raw) * 0.12)
+    y_min = y_min_raw - y_pad
+    y_max = y_max_raw + y_pad
     ax.set_ylim(y_min, y_max)
 
     ax.set_title(title, fontsize=12, pad=10)
@@ -523,12 +639,12 @@ def plot_figure_05() -> Path:
     treatment = df[df["SuperGroup"] == "Treatment"].copy()
     control = df[df["SuperGroup"] == "Control"].copy()
 
-    fig = plt.figure(figsize=(14, 11), facecolor="#f2f2f2")
+    fig = plt.figure(figsize=(16.5, 12), facecolor="#f2f2f2")
     gs = fig.add_gridspec(
         4,
         2,
-        height_ratios=[12, 1.8, 12, 1.8],
-        hspace=0.45,
+        height_ratios=[13, 1.2, 13, 1.2],
+        hspace=0.34,
         wspace=0.08,
     )
 
@@ -701,7 +817,7 @@ def _plot_treatment_big_panel(
     slope_er, intercept_er = np.polyfit(beta, er, 1)
     slope_capm, intercept_capm = np.polyfit(beta, capm, 1)
 
-    ax.scatter(beta, er, s=42, color="#0B789B", label="er", zorder=3)
+    ax.scatter(beta, er, s=42, color="#0B789B", label="E(r)", zorder=3)
     ax.scatter(beta, capm, s=46, color="#FF6A00", label="CAPM", zorder=2)
 
     x_line = np.linspace(float(np.min(beta)), float(np.max(beta)), 120)
@@ -711,7 +827,7 @@ def _plot_treatment_big_panel(
         color="#1886AD",
         linestyle=(0, (1.2, 1.2)),
         linewidth=1.6,
-        label="Linear (er)",
+        label="Linear (E(r))",
         zorder=1,
     )
     ax.plot(
@@ -722,6 +838,18 @@ def _plot_treatment_big_panel(
         linewidth=1.6,
         label="Linear (CAPM)",
         zorder=1,
+    )
+
+    x_sml = float(x_line[int(len(x_line) * 0.8)])
+    y_sml = float(intercept_capm + slope_capm * x_sml)
+    ax.annotate(
+        "SML Line",
+        xy=(x_sml, y_sml),
+        xytext=(8, -10),
+        textcoords="offset points",
+        fontsize=10,
+        color="#FF8A4C",
+        fontweight="bold",
     )
 
     for x, y, t in zip(beta, er, labels):
@@ -794,7 +922,7 @@ def plot_figure_07() -> Path:
     fig.text(
         0.02,
         0.96,
-        "6.2.1 Treatment Big Group",
+        "Treatment Big Group",
         fontsize=22,
         fontweight="bold",
         ha="left",
@@ -838,7 +966,7 @@ def _plot_treatment_small_panel(
     slope_er, intercept_er = np.polyfit(beta, er, 1)
     slope_capm, intercept_capm = np.polyfit(beta, capm, 1)
 
-    ax.scatter(beta, er, s=42, color="#0B789B", label="er", zorder=3)
+    ax.scatter(beta, er, s=42, color="#0B789B", label="E(r)", zorder=3)
     ax.scatter(beta, capm, s=46, color="#FF6A00", label="CAPM", zorder=2)
 
     x_line = np.linspace(float(np.min(beta)), float(np.max(beta)), 120)
@@ -848,7 +976,7 @@ def _plot_treatment_small_panel(
         color="#1886AD",
         linestyle=(0, (1.2, 1.2)),
         linewidth=1.6,
-        label="Linear (er)",
+        label="Linear (E(r))",
         zorder=1,
     )
     ax.plot(
@@ -859,6 +987,18 @@ def _plot_treatment_small_panel(
         linewidth=1.6,
         label="Linear (CAPM)",
         zorder=1,
+    )
+
+    x_sml = float(x_line[int(len(x_line) * 0.8)])
+    y_sml = float(intercept_capm + slope_capm * x_sml)
+    ax.annotate(
+        "SML Line",
+        xy=(x_sml, y_sml),
+        xytext=(8, -10),
+        textcoords="offset points",
+        fontsize=10,
+        color="#FF8A4C",
+        fontweight="bold",
     )
 
     for x, y, t in zip(beta, er, labels):
@@ -931,7 +1071,7 @@ def plot_figure_08() -> Path:
     fig.text(
         0.02,
         0.96,
-        "6.2.2 Treatment Small Group",
+        "Treatment Small Group",
         fontsize=22,
         fontweight="bold",
         ha="left",

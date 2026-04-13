@@ -132,17 +132,24 @@ def plot_02_caar_paths(daily_raw: pd.DataFrame) -> None:
 
 
 def plot_03_treatment_control_diff(t5: pd.DataFrame) -> None:
-    df = t5[t5["Scope"] == "ByDate"].copy().sort_values("Date")
+    df = t5[t5["Scope"] == "ByDate"].copy().sort_values("Date").reset_index(drop=True)
     fig, ax = plt.subplots(figsize=(12, 6))
 
+    x = np.arange(len(df))
+    x_labels = [d.strftime("%Y-%m-%d") for d in df["Date"]]
     diff_pct = df["Diff_Treat_minus_Control"] * 100
     bars = ax.bar(
-        df["Date"],
+        x,
         diff_pct,
         color=np.where(diff_pct < 0, "#b22222", "#2e8b57"),
     )
     ax.axhline(0, color="black", linewidth=1)
-    ax.axvline(EVENT_X, color="black", linestyle="--", linewidth=1.5)
+    if EVENT_DATE in set(df["Date"]):
+        event_idx = int(df.index[df["Date"] == EVENT_DATE][0])
+        ax.axvline(event_idx, color="black", linestyle="--", linewidth=1.5)
+
+    ax.set_xticks(x)
+    ax.set_xticklabels(x_labels, rotation=35, ha="right")
 
     for bar, p in zip(bars, df["p_value"]):
         y = bar.get_height()
@@ -155,7 +162,7 @@ def plot_03_treatment_control_diff(t5: pd.DataFrame) -> None:
             fontsize=9,
         )
 
-    ax.set_title("Part 1: Treatment - Control Daily AR Difference", fontweight="bold")
+    ax.set_title("Daily AAR Difference (Treatment - Control)", fontweight="bold")
     ax.set_ylabel("Difference in AR (%)")
     ax.set_xlabel("Date")
     save_fig("R03_treatment_control_diff.png")

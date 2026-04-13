@@ -1,0 +1,7 @@
+Test,Sample,n,Mean,t_stat,p_value,Significant_5pct
+One-sample t-test: Treatment daily weighted AAR vs 0,Daily AAR (Treatment),5,-0.010766583463062293,-1.7812894398412396,0.1494595251263002,False
+One-sample t-test: Control daily weighted AAR vs 0,Daily AAR (Control),5,-0.003915685593637712,-0.9676419309933815,0.38801879327418637,False
+Paired t-test: Treatment vs Control daily weighted AAR,Daily AAR diff (Treatment-Control),5,-0.0068508978694245826,-0.7681955024507366,0.48521166830429724,False
+One-sample t-test: Treatment stock CAR_sum vs 0,Stock CAR_sum (Treatment),15,-0.05383291731531153,-3.7959725531003454,0.001966385215070202,True
+One-sample t-test: Control stock CAR_sum vs 0,Stock CAR_sum (Control),15,-0.019578427968188695,-1.666658975905977,0.11778855191310024,False
+Welch t-test: Treatment vs Control stock CAR_sum,Stock CAR_sum diff (Treatment-Control),30,-0.03425448934712283,-1.8601411082655486,0.0737669101282037,False

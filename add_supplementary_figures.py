@@ -200,10 +200,23 @@ def plot_top_bottom_5_stocks_car() -> None:
     ]
     labels_top = [f"{r.Ticker} ({r.Group})" for r in top_5.itertuples(index=False)]
 
+    group_color = {
+        "Treatment": "#0B789B",
+        "Control": "#FF6A00",
+    }
+    colors_bottom = [
+        group_color["Treatment"] if "Treatment" in g else group_color["Control"]
+        for g in bottom_5["Group"].to_list()
+    ]
+    colors_top = [
+        group_color["Treatment"] if "Treatment" in g else group_color["Control"]
+        for g in top_5["Group"].to_list()
+    ]
+
     axes[0].barh(
         labels_bottom,
         bottom_5["CAR_pct"],
-        color="#B22222",
+        color=colors_bottom,
         edgecolor="black",
         linewidth=0.6,
     )
@@ -212,25 +225,40 @@ def plot_top_bottom_5_stocks_car() -> None:
     axes[0].set_xlabel("CAR (%)")
 
     axes[1].barh(
-        labels_top, top_5["CAR_pct"], color="#1F77B4", edgecolor="black", linewidth=0.6
+        labels_top,
+        top_5["CAR_pct"],
+        color=colors_top,
+        edgecolor="black",
+        linewidth=0.6,
     )
     axes[1].axvline(0, color="black", linewidth=1)
     axes[1].set_title("Top 5 by Event-Window CAR", fontweight="bold")
     axes[1].set_xlabel("CAR (%)")
 
     for ax, data in zip(axes, [bottom_5, top_5]):
-        for y, v in enumerate(data["CAR_pct"].to_list()):
-            ax.text(
-                v + (0.2 if v >= 0 else -0.2),
-                y,
-                f"{v:.2f}%",
-                va="center",
-                ha="left" if v >= 0 else "right",
-                fontsize=9,
-            )
+        for y, row in enumerate(data.itertuples(index=False)):
+            v = float(row.CAR_pct)
+            x_text = v + (0.2 if v >= 0 else -0.2)
+            ha = "left" if v >= 0 else "right"
+
+            # Avoid overlap for the leftmost label in R09 (RMD treatment-big row).
+            if row.Ticker == "RMD" and row.Group == "Treatment Big":
+                ax.text(
+                    -0.08,
+                    y - 0.22,
+                    f"{v:.2f}%",
+                    transform=ax.get_yaxis_transform(),
+                    va="center",
+                    ha="left",
+                    fontsize=9,
+                    clip_on=False,
+                )
+                continue
+
+            ax.text(x_text, y, f"{v:.2f}%", va="center", ha=ha, fontsize=9)
 
     fig.suptitle(
-        "Supplementary Fig 19/20: Stock Winners & Losers (Event-Window CAR)",
+        "Best and Worst Performers (Top 5 vs. Bottom 5 CAR)",
         fontweight="bold",
         y=1.03,
     )
