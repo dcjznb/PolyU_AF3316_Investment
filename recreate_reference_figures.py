@@ -114,7 +114,9 @@ def plot_figure_01() -> Path:
     return out_file
 
 
-def _plot_beta_panel(ax: plt.Axes, df: pd.DataFrame, title: str) -> None:
+def _plot_beta_panel(
+    ax: plt.Axes, df: pd.DataFrame, title: str, y_top_override: float | None = None
+) -> None:
     tickers = df["Ticker"].to_list()
     x = np.arange(len(tickers))
     width = 0.26
@@ -150,8 +152,11 @@ def _plot_beta_panel(ax: plt.Axes, df: pd.DataFrame, title: str) -> None:
     for spine in ax.spines.values():
         spine.set_visible(False)
 
-    max_beta = float(np.nanmax(np.concatenate([before_vals, after_vals])))
-    y_top = max(1.5, np.ceil(max_beta / 0.2) * 0.2)
+    if y_top_override is not None:
+        y_top = y_top_override
+    else:
+        max_beta = float(np.nanmax(np.concatenate([before_vals, after_vals])))
+        y_top = max(1.5, np.ceil(max_beta / 0.2) * 0.2)
     ax.set_ylim(0.0, y_top)
     ax.set_yticks(np.arange(0.0, y_top + 1e-9, 0.2))
     ax.tick_params(axis="x", length=0, labelsize=10, pad=6)
@@ -179,11 +184,22 @@ def plot_figure_02() -> Path:
     treatment = treatment.sort_values("_order")
     control = control.sort_values("_order")
 
+    all_beta = np.concatenate(
+        [
+            treatment["beta_before"].to_numpy(),
+            treatment["beta_after"].to_numpy(),
+            control["beta_before"].to_numpy(),
+            control["beta_after"].to_numpy(),
+        ]
+    )
+    max_beta_global = float(np.nanmax(all_beta))
+    y_top_unified = max(1.5, np.ceil(max_beta_global / 0.2) * 0.2)
+
     fig, axes = plt.subplots(1, 2, figsize=(14, 4.9), sharey=False)
     fig.patch.set_facecolor("#f2f2f2")
 
-    _plot_beta_panel(axes[0], treatment, "Beta for Treatment Stocks")
-    _plot_beta_panel(axes[1], control, "Beta for Control Stocks")
+    _plot_beta_panel(axes[0], treatment, "Beta for Treatment Stocks", y_top_unified)
+    _plot_beta_panel(axes[1], control, "Beta for Control Stocks", y_top_unified)
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     out_file = OUT_DIR / "Figure_02_beta_before_after_by_stock.png"
