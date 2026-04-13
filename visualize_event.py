@@ -60,6 +60,34 @@ def save_fig(output_name: str) -> None:
     plt.close()
 
 
+def format_p_value(p: float, min_decimals: int = 3, max_decimals: int = 10) -> str:
+    if pd.isna(p):
+        return "NA"
+
+    p = float(p)
+    if p == 0.0:
+        return "0"
+
+    decimals = min_decimals
+    while decimals < max_decimals and abs(p) < 10 ** (-decimals):
+        decimals += 1
+
+    return f"{p:.{decimals}f}"
+
+
+def required_p_decimals(p: float, min_decimals: int = 3, max_decimals: int = 10) -> int:
+    if pd.isna(p):
+        return min_decimals
+    p = abs(float(p))
+    if p == 0.0:
+        return min_decimals
+
+    decimals = min_decimals
+    while decimals < max_decimals and p < 10 ** (-decimals):
+        decimals += 1
+    return decimals
+
+
 def plot_01_aar_with_ci(daily_raw: pd.DataFrame) -> None:
     fig, ax = plt.subplots(figsize=(12, 6))
 
@@ -151,12 +179,14 @@ def plot_03_treatment_control_diff(t5: pd.DataFrame) -> None:
     ax.set_xticks(x)
     ax.set_xticklabels(x_labels, rotation=35, ha="right")
 
+    uniform_decimals = max(required_p_decimals(p) for p in df["p_value"])
+
     for bar, p in zip(bars, df["p_value"]):
         y = bar.get_height()
         ax.text(
             bar.get_x() + bar.get_width() / 2,
             y + (0.1 if y >= 0 else -0.1),
-            f"p={p:.3f}",
+            f"p={float(p):.{uniform_decimals}f}" if not pd.isna(p) else "p=NA",
             ha="center",
             va="bottom" if y >= 0 else "top",
             fontsize=9,
