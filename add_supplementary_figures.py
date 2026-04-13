@@ -137,7 +137,7 @@ def plot_sharpe_4groups_before_after() -> pd.DataFrame:
                 fontsize=9,
             )
 
-    save_fig("R08_sharpe_ratio_4groups_before_after.png")
+    save_fig("figure_event_08_sharpe_ratio_4groups_before_after.png")
     return pivot
 
 
@@ -176,7 +176,7 @@ def plot_small_group_delta_sharpe(pivot: pd.DataFrame) -> None:
             fontsize=10,
         )
 
-    save_fig("R10_small_group_delta_excess_sharpe.png")
+    save_fig("figure_event_10_small_group_delta_excess_sharpe.png")
 
 
 def plot_top_bottom_5_stocks_car() -> None:
@@ -262,7 +262,203 @@ def plot_top_bottom_5_stocks_car() -> None:
         fontweight="bold",
         y=1.03,
     )
-    save_fig("R09_top5_bottom5_stock_car_rankings.png")
+    save_fig("figure_event_09_top5_bottom5_stock_car_rankings.png")
+
+
+def plot_control_decline_attribution() -> None:
+    daily = pd.read_csv(DATA_DIR / "event_window_daily_2023-08-04_to_2023-08-10.csv")
+    daily["Date"] = pd.to_datetime(daily["Date"])
+
+    control = daily[daily["Group"].str.contains("Control", na=False)].copy()
+    if control.empty:
+        return
+
+    group_daily = (
+        control.groupby(["Date", "Group"], as_index=False)
+        .agg(
+            n_stocks=("Ticker", "nunique"),
+            group_aar=("Market_Adjusted_Return", "mean"),
+        )
+        .sort_values(["Date", "Group"])
+    )
+    total_n = (
+        group_daily.groupby("Date", as_index=False)["n_stocks"]
+        .sum()
+        .rename(columns={"n_stocks": "n_control_total"})
+    )
+    group_daily = group_daily.merge(total_n, on="Date", how="left")
+    group_daily["weight_in_control"] = (
+        group_daily["n_stocks"] / group_daily["n_control_total"]
+    )
+    group_daily["contribution_to_control_aar"] = (
+        group_daily["group_aar"] * group_daily["weight_in_control"]
+    )
+
+    control_aar = (
+        control.groupby("Date", as_index=False)
+        .agg(control_aar=("Market_Adjusted_Return", "mean"))
+        .sort_values("Date")
+    )
+
+    stock_daily = (
+        control.groupby(["Date", "Ticker", "Name", "Group"], as_index=False)
+        .agg(stock_ar=("Market_Adjusted_Return", "mean"))
+        .merge(total_n, on="Date", how="left")
+    )
+    stock_daily["contribution_to_control_aar"] = (
+        stock_daily["stock_ar"] / stock_daily["n_control_total"]
+    )
+
+    post = stock_daily[stock_daily["Date"] > EVENT_DATE].copy()
+    post_stock = (
+        post.groupby(["Ticker", "Name", "Group"], as_index=False)
+        .agg(
+            mean_post_ar=("stock_ar", "mean"),
+            cum_contribution_post=("contribution_to_control_aar", "sum"),
+            mean_contribution_post=("contribution_to_control_aar", "mean"),
+            n_days=("Date", "nunique"),
+        )
+        .sort_values("cum_contribution_post")
+    )
+    post_stock["label"] = post_stock["Ticker"] + " (" + post_stock["Group"] + ")"
+
+    group_export = group_daily.copy()
+    group_export["group_aar_pct"] = group_export["group_aar"] * 100
+    group_export["contribution_pct"] = group_export["contribution_to_control_aar"] * 100
+    group_export.to_csv(
+        REPORT_DIR / "table_control_decline_group_contribution.csv", index=False
+    )
+
+    post_export = post_stock.copy()
+    post_export["mean_post_ar_pct"] = post_export["mean_post_ar"] * 100
+    post_export["cum_contribution_post_pct"] = (
+        post_export["cum_contribution_post"] * 100
+    )
+    post_export["mean_contribution_post_pct"] = (
+        post_export["mean_contribution_post"] * 100
+    )
+    post_export.to_csv(
+        REPORT_DIR / "table_control_decline_stock_contribution_post_event.csv",
+        index=False,
+    )
+
+    fig, axes = plt.subplots(3, 1, figsize=(13, 12), sharex=True)
+    ax1, ax2, ax3 = axes
+
+    timeline = control_aar.copy()
+    timeline["DateStr"] = timeline["Date"].dt.strftime("%Y-%m-%d")
+    x = np.arange(len(timeline))
+    event_idx = timeline.index[timeline["Date"] == EVENT_DATE]
+    event_loc = int(event_idx[0]) if len(event_idx) > 0 else None
+
+    ax1.plot(x, timeline["control_aar"] * 100, color="#1F77B4", marker="o", linewidth=2)
+    ax1.axhline(0, color="black", linewidth=1)
+    if event_loc is not None:
+        ax1.axvline(event_loc, linestyle="--", color="black", linewidth=1.2)
+    ax1.set_ylabel("Control AAR (%)")
+    ax1.set_title("Control Group AAR Around Event Date", fontweight="bold")
+
+    pivot = group_daily.pivot_table(
+        index="Date",
+        columns="Group",
+        values="contribution_to_control_aar",
+        aggfunc="sum",
+    ).reindex(timeline["Date"])
+    c_big = (
+        pivot.get("Control Big", pd.Series(0, index=pivot.index)).fillna(0) * 100
+    ).to_numpy()
+    c_small = (
+        pivot.get("Control Small", pd.Series(0, index=pivot.index)).fillna(0) * 100
+    ).to_numpy()
+
+    width = 0.36
+    big_bars = ax2.bar(
+        x - width / 2,
+        c_big,
+        width=width,
+        label="Control Big contribution",
+        color="#4C78A8",
+    )
+    small_bars = ax2.bar(
+        x + width / 2,
+        c_small,
+        width=width,
+        label="Control Small contribution",
+        color="#F58518",
+    )
+    net = c_big + c_small
+    ax2.plot(
+        x,
+        net,
+        color="#2F2F2F",
+        linestyle="--",
+        marker="o",
+        linewidth=1.8,
+        label="Net control contribution",
+    )
+    ax2.axhline(0, color="black", linewidth=1)
+    if event_loc is not None:
+        ax2.axvline(event_loc, linestyle="--", color="black", linewidth=1.2)
+        ax2.axvspan(event_loc - 0.5, len(x) - 0.5, color="#ECECEC", alpha=0.35)
+    ax2.set_ylabel("Contribution to Control AAR (%)")
+    ax2.set_title(
+        "Daily Contribution Decomposition (Big vs Small + Net)",
+        fontweight="bold",
+    )
+    ax2.legend(loc="upper right", frameon=True, ncol=1)
+
+    for bars in [big_bars, small_bars]:
+        for bar in bars:
+            v = float(bar.get_height())
+            y = v + (0.06 if v >= 0 else -0.06)
+            ax2.text(
+                bar.get_x() + bar.get_width() / 2,
+                y,
+                f"{v:.2f}",
+                ha="center",
+                va="bottom" if v >= 0 else "top",
+                fontsize=8,
+            )
+
+    worst = post_stock.head(8).copy()
+    worst = worst.sort_values("cum_contribution_post", ascending=True)
+    ax3.barh(
+        worst["label"],
+        worst["cum_contribution_post"] * 100,
+        color="#D62728",
+        edgecolor="black",
+        linewidth=0.6,
+    )
+    ax3.axvline(0, color="black", linewidth=1)
+    ax3.set_xlabel("Cum contribution to control AAR after event (pp)")
+    ax3.set_title("Top Negative Stock Contributors After Event", fontweight="bold")
+
+    for i, v in enumerate((worst["cum_contribution_post"] * 100).to_numpy()):
+        ax3.text(v - 0.01, i, f"{v:.2f}", ha="right", va="center", fontsize=9)
+
+    ax3.set_xticks(ax3.get_xticks())
+    ax3.set_xticklabels([f"{v:.2f}" for v in ax3.get_xticks()])
+
+    axes[-1].set_xticks(x)
+    axes[-1].set_xticklabels(timeline["DateStr"].to_list(), rotation=30, ha="right")
+
+    save_fig("figure_event_11_control_decline_attribution.png")
+
+    post_group = (
+        group_daily[group_daily["Date"] > EVENT_DATE]
+        .groupby("Group", as_index=False)["contribution_to_control_aar"]
+        .sum()
+        .sort_values("contribution_to_control_aar")
+    )
+    post_group["contribution_pct"] = post_group["contribution_to_control_aar"] * 100
+
+    print("\nControl decline attribution (post-event cumulative contribution, pp):")
+    for row in post_group.itertuples(index=False):
+        print(f"- {row.Group}: {row.contribution_pct:.3f}")
+
+    print("\nMost negative post-event stock contributors (pp):")
+    for row in post_stock.head(5).itertuples(index=False):
+        print(f"- {row.Ticker} ({row.Group}): {row.cum_contribution_post * 100:.3f}")
 
 
 def main() -> None:
@@ -270,6 +466,7 @@ def main() -> None:
     pivot = plot_sharpe_4groups_before_after()
     plot_small_group_delta_sharpe(pivot)
     plot_top_bottom_5_stocks_car()
+    plot_control_decline_attribution()
     print(f"All supplementary figures generated in: {REPORT_DIR}")
 
 

@@ -107,7 +107,7 @@ def plot_figure_01() -> Path:
     _plot_panel(axes[1], control, "Average Return of Control Stocks")
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
-    out_file = OUT_DIR / "Figure_01_avg_return_before_after_by_stock.png"
+    out_file = OUT_DIR / "figure_reference_01_avg_return_before_after_by_stock.png"
     fig.tight_layout(w_pad=2.2)
     fig.savefig(out_file, dpi=300, bbox_inches="tight", facecolor=fig.get_facecolor())
     plt.close(fig)
@@ -202,7 +202,7 @@ def plot_figure_02() -> Path:
     _plot_beta_panel(axes[1], control, "Beta for Control Stocks", y_top_unified)
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
-    out_file = OUT_DIR / "Figure_02_beta_before_after_by_stock.png"
+    out_file = OUT_DIR / "figure_reference_02_beta_before_after_by_stock.png"
     fig.tight_layout(w_pad=2.2)
     fig.savefig(out_file, dpi=300, bbox_inches="tight", facecolor=fig.get_facecolor())
     plt.close(fig)
@@ -429,7 +429,7 @@ def plot_figure_03() -> Path:
     )
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
-    out_file = OUT_DIR / "Figure_03_beta_vs_expected_return_before_after.png"
+    out_file = OUT_DIR / "figure_reference_03_beta_vs_expected_return_before_after.png"
     fig.tight_layout(w_pad=2.8)
     fig.savefig(out_file, dpi=300, bbox_inches="tight", facecolor=fig.get_facecolor())
     plt.close(fig)
@@ -515,7 +515,7 @@ def plot_figure_04() -> Path:
     )
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
-    out_file = OUT_DIR / "Figure_04_avg_return_both_groups_by_date.png"
+    out_file = OUT_DIR / "figure_reference_04_avg_return_both_groups_by_date.png"
     fig.subplots_adjust(left=0.08, right=0.98, top=0.9, bottom=0.30)
     fig.savefig(out_file, dpi=300, bbox_inches="tight", facecolor=fig.get_facecolor())
     plt.close(fig)
@@ -705,7 +705,7 @@ def plot_figure_05() -> Path:
     _add_rsquare_row(ax_c_tbl, r2_cb, r2_ca)
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
-    out_file = OUT_DIR / "Figure_05_four_panel_group_before_after_scatter.png"
+    out_file = OUT_DIR / "figure_reference_05_four_panel_group_before_after_scatter.png"
     fig.savefig(out_file, dpi=300, bbox_inches="tight", facecolor=fig.get_facecolor())
     plt.close(fig)
     return out_file
@@ -810,7 +810,7 @@ def plot_figure_06() -> Path:
     fig.subplots_adjust(left=0.06, right=0.98, top=0.88, bottom=0.18, wspace=0.12)
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
-    out_file = OUT_DIR / "Figure_06_line_return_by_group_big_small.png"
+    out_file = OUT_DIR / "figure_reference_06_line_return_by_group_big_small.png"
     fig.savefig(out_file, dpi=300, bbox_inches="tight", facecolor=fig.get_facecolor())
     plt.close(fig)
     return out_file
@@ -959,7 +959,7 @@ def plot_figure_07() -> Path:
     fig.subplots_adjust(left=0.06, right=0.98, top=0.68, bottom=0.24, wspace=0.34)
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
-    out_file = OUT_DIR / "Figure_07_treatment_big_before_after_scatter.png"
+    out_file = OUT_DIR / "figure_reference_07_treatment_big_before_after_scatter.png"
     fig.savefig(out_file, dpi=300, bbox_inches="tight", facecolor=fig.get_facecolor())
     plt.close(fig)
     return out_file
@@ -1108,7 +1108,7 @@ def plot_figure_08() -> Path:
     fig.subplots_adjust(left=0.06, right=0.98, top=0.68, bottom=0.24, wspace=0.34)
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
-    out_file = OUT_DIR / "Figure_08_treatment_small_before_after_scatter.png"
+    out_file = OUT_DIR / "figure_reference_08_treatment_small_before_after_scatter.png"
     fig.savefig(out_file, dpi=300, bbox_inches="tight", facecolor=fig.get_facecolor())
     plt.close(fig)
     return out_file

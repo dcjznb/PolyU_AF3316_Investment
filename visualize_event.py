@@ -100,7 +100,7 @@ def plot_01_aar_with_ci(daily_raw: pd.DataFrame) -> None:
     ax.set_ylabel("AAR (%)")
     ax.set_xlabel("Date")
     ax.legend()
-    save_fig("R01_aar_with_ci.png")
+    save_fig("figure_event_01_aar_with_ci.png")
 
 
 def plot_02_caar_paths(daily_raw: pd.DataFrame) -> None:
@@ -128,7 +128,7 @@ def plot_02_caar_paths(daily_raw: pd.DataFrame) -> None:
     ax.set_ylabel("CAAR (%)")
     ax.set_xlabel("Date")
     ax.legend()
-    save_fig("R02_caar_paths.png")
+    save_fig("figure_event_02_caar_paths.png")
 
 
 def plot_03_treatment_control_diff(t5: pd.DataFrame) -> None:
@@ -165,7 +165,7 @@ def plot_03_treatment_control_diff(t5: pd.DataFrame) -> None:
     ax.set_title("Daily AAR Difference (Treatment - Control)", fontweight="bold")
     ax.set_ylabel("Difference in AR (%)")
     ax.set_xlabel("Date")
-    save_fig("R03_treatment_control_diff.png")
+    save_fig("figure_event_03_treatment_control_diff.png")
 
 
 def plot_04_stock_car_distribution(t3: pd.DataFrame) -> None:
@@ -197,7 +197,7 @@ def plot_04_stock_car_distribution(t3: pd.DataFrame) -> None:
     )
     ax.set_ylabel("CAR over Event Window (%)")
     ax.set_xlabel("")
-    save_fig("R04_stock_car_distribution.png")
+    save_fig("figure_event_04_stock_car_distribution.png")
 
 
 def plot_05_group_risk_return_map(t8: pd.DataFrame) -> None:
@@ -235,7 +235,7 @@ def plot_05_group_risk_return_map(t8: pd.DataFrame) -> None:
     ax.set_title("Part 2: Risk-Return Map (4 Groups, Monthly)", fontweight="bold")
     ax.set_xlabel("Std Dev of Monthly Return (%)")
     ax.set_ylabel("Mean Monthly Return (%)")
-    save_fig("R05_group_risk_return_map.png")
+    save_fig("figure_event_05_group_risk_return_map.png")
 
 
 def plot_06_beta_vs_return_stock_level(t6: pd.DataFrame) -> None:
@@ -280,7 +280,7 @@ def plot_06_beta_vs_return_stock_level(t6: pd.DataFrame) -> None:
             bbox_to_anchor=(1.02, 1),
             loc="upper left",
         )
-    save_fig("R06_beta_vs_return_stock_level.png")
+    save_fig("figure_event_06_beta_vs_return_stock_level.png")
 
 
 def plot_07_group_beta_return_relation(t7: pd.DataFrame, t8: pd.DataFrame) -> None:
@@ -337,7 +337,7 @@ def plot_07_group_beta_return_relation(t7: pd.DataFrame, t8: pd.DataFrame) -> No
     axes[1].set_title("Part 2: Beta vs Return (4 Groups)", fontweight="bold")
     axes[1].set_xlabel("Beta")
 
-    save_fig("R07_delta_mean_return_by_group.png")
+    save_fig("figure_event_07_delta_mean_return_by_group.png")
 
 
 def main() -> None:
