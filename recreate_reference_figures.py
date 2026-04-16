@@ -22,6 +22,15 @@ TABLE_01 = (
     / "table_01_daily_aar_by_group_date.csv"
 )
 OUT_DIR = BASE_DIR / "event_study_data" / "visualizations" / "report"
+LONG_TERM_OUT_DIR = OUT_DIR / "long_term"
+TABLE_06 = (
+    BASE_DIR
+    / "event_study_data"
+    / "analysis_results"
+    / "table_06_monthly_stock_metrics_before_after.csv"
+)
+COMPANY_PERIOD = "After"
+RISK_FREE_ANNUAL = 0.02
 
 
 def _percent_axis(x: float, _pos: float) -> str:
@@ -1114,6 +1123,133 @@ def plot_figure_08() -> Path:
     return out_file
 
 
+def _annualized_sharpe_from_monthly(
+    mean_monthly_return: pd.Series,
+    std_monthly_return: pd.Series,
+    risk_free_annual: float = RISK_FREE_ANNUAL,
+) -> pd.Series:
+    rf_monthly = (1 + float(risk_free_annual)) ** (1 / 12) - 1
+    return ((mean_monthly_return - rf_monthly) / std_monthly_return) * np.sqrt(12)
+
+
+def _plot_ranked_company_bars(
+    ax: plt.Axes,
+    df: pd.DataFrame,
+    value_col: str,
+    title: str,
+    ylabel: str,
+    color_map,
+    value_formatter,
+    annotate_formatter,
+) -> None:
+    x = np.arange(len(df))
+    values = df[value_col].to_numpy(dtype=float)
+    colors = color_map(np.linspace(0.35, 0.9, len(df)))
+
+    bars = ax.bar(
+        x,
+        values,
+        color=colors,
+        edgecolor="black",
+        linewidth=0.5,
+    )
+
+    ax.axhline(0, color="black", linewidth=1)
+    ax.set_xticks(x)
+    ax.set_xticklabels(df["Ticker"].to_list(), rotation=45, ha="right")
+    ax.set_ylabel(ylabel)
+    ax.set_title(title, fontweight="bold")
+    ax.yaxis.set_major_formatter(value_formatter)
+    ax.tick_params(axis="x", length=0)
+
+    y_min = float(np.nanmin(values))
+    y_max = float(np.nanmax(values))
+    pad = max(0.01, (y_max - y_min) * 0.12)
+    ax.set_ylim(y_min - pad, y_max + pad)
+
+    for bar, value in zip(bars, values):
+        offset = 0.005 if value >= 0 else -0.005
+        ax.text(
+            bar.get_x() + bar.get_width() / 2,
+            value + offset,
+            annotate_formatter(value),
+            ha="center",
+            va="bottom" if value >= 0 else "top",
+            fontsize=8,
+        )
+
+
+def plot_company_alpha_by_company() -> Path:
+    df = pd.read_csv(TABLE_06)
+    sub = df[df["Period"] == COMPANY_PERIOD].copy()
+    sub = sub.dropna(subset=["alpha"]).sort_values("alpha", ascending=False)
+
+    fig, ax = plt.subplots(figsize=(18, 7))
+    fig.patch.set_facecolor("#f2f2f2")
+
+    _plot_ranked_company_bars(
+        ax=ax,
+        df=sub,
+        value_col="alpha",
+        title="Alpha by Company",
+        ylabel="Alpha",
+        color_map=plt.cm.Reds,
+        value_formatter=FuncFormatter(_percent_axis),
+        annotate_formatter=lambda v: f"{v * 100:.1f}%",
+    )
+
+    ax.set_facecolor("#f2f2f2")
+    ax.grid(axis="y", color="#c6c6c6", linewidth=1.0)
+    for spine in ax.spines.values():
+        spine.set_visible(False)
+
+    LONG_TERM_OUT_DIR.mkdir(parents=True, exist_ok=True)
+    out_file = LONG_TERM_OUT_DIR / "figure_company_alpha_by_company.png"
+    fig.tight_layout()
+    fig.savefig(out_file, dpi=300, bbox_inches="tight", facecolor=fig.get_facecolor())
+    plt.close(fig)
+    return out_file
+
+
+def plot_company_sharpe_by_company() -> Path:
+    df = pd.read_csv(TABLE_06)
+    sub = df[df["Period"] == COMPANY_PERIOD].copy()
+    sub["Sharpe_Ratio"] = _annualized_sharpe_from_monthly(
+        sub["mean_monthly_return"],
+        sub["std_monthly_return"],
+        risk_free_annual=RISK_FREE_ANNUAL,
+    )
+    sub = sub.dropna(subset=["Sharpe_Ratio"]).sort_values(
+        "Sharpe_Ratio", ascending=False
+    )
+
+    fig, ax = plt.subplots(figsize=(18, 7))
+    fig.patch.set_facecolor("#f2f2f2")
+
+    _plot_ranked_company_bars(
+        ax=ax,
+        df=sub,
+        value_col="Sharpe_Ratio",
+        title="Sharpe Ratio by Company",
+        ylabel="Sharpe Ratio",
+        color_map=plt.cm.Blues,
+        value_formatter=FuncFormatter(lambda x, _pos: f"{x:.2f}"),
+        annotate_formatter=lambda v: f"{v:.3f}",
+    )
+
+    ax.set_facecolor("#f2f2f2")
+    ax.grid(axis="y", color="#c6c6c6", linewidth=1.0)
+    for spine in ax.spines.values():
+        spine.set_visible(False)
+
+    LONG_TERM_OUT_DIR.mkdir(parents=True, exist_ok=True)
+    out_file = LONG_TERM_OUT_DIR / "figure_company_sharpe_ratio_by_company.png"
+    fig.tight_layout()
+    fig.savefig(out_file, dpi=300, bbox_inches="tight", facecolor=fig.get_facecolor())
+    plt.close(fig)
+    return out_file
+
+
 def main() -> None:
     out_file_01 = plot_figure_01()
     out_file_02 = plot_figure_02()
@@ -1123,6 +1259,8 @@ def main() -> None:
     out_file_06 = plot_figure_06()
     out_file_07 = plot_figure_07()
     out_file_08 = plot_figure_08()
+    out_file_09 = plot_company_alpha_by_company()
+    out_file_10 = plot_company_sharpe_by_company()
     print(f"Saved: {out_file_01}")
     print(f"Saved: {out_file_02}")
     print(f"Saved: {out_file_03}")
@@ -1131,6 +1269,8 @@ def main() -> None:
     print(f"Saved: {out_file_06}")
     print(f"Saved: {out_file_07}")
     print(f"Saved: {out_file_08}")
+    print(f"Saved: {out_file_09}")
+    print(f"Saved: {out_file_10}")
 
 
 if __name__ == "__main__":

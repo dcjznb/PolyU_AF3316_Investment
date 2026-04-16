@@ -18,6 +18,7 @@ ANALYSIS_DIR = DATA_DIR / "analysis_results"
 REPORT_DIR = DATA_DIR / "visualizations" / "report"
 EVENT_DATE = pd.Timestamp("2023-08-08")
 WINDOW_MONTHS = 24
+RISK_FREE_ANNUAL = 0.02
 
 
 def save_fig(file_name: str) -> None:
@@ -138,6 +139,132 @@ def plot_sharpe_4groups_before_after() -> pd.DataFrame:
             )
 
     save_fig("figure_event_08_sharpe_ratio_4groups_before_after.png")
+    return pivot
+
+
+def build_regular_sharpe_4groups_symmetric_window(
+    risk_free_annual: float = RISK_FREE_ANNUAL,
+    annualize: bool = True,
+) -> pd.DataFrame:
+    before = pd.read_csv(DATA_DIR / "prices_before_2023-08-08.csv")
+    after = pd.read_csv(DATA_DIR / "prices_after_2023-08-08.csv")
+    monthly = pd.concat([before, after], ignore_index=True)
+
+    monthly["Date"] = pd.to_datetime(monthly["Date"])
+    monthly = monthly.sort_values(["Ticker", "Date"]).reset_index(drop=True)
+    monthly["Monthly_Return"] = monthly.groupby("Ticker")["Adj Close"].pct_change(
+        fill_method=None
+    )
+
+    monthly = monthly[monthly["Ticker"] != "SPY"].copy()
+
+    before_start = EVENT_DATE - pd.DateOffset(months=WINDOW_MONTHS)
+    after_end = EVENT_DATE + pd.DateOffset(months=WINDOW_MONTHS)
+
+    monthly["Window"] = np.select(
+        [
+            (monthly["Date"] >= before_start) & (monthly["Date"] < EVENT_DATE),
+            (monthly["Date"] >= EVENT_DATE) & (monthly["Date"] < after_end),
+        ],
+        ["Before", "After"],
+        default="Outside",
+    )
+
+    win = monthly[monthly["Window"].isin(["Before", "After"])].copy()
+
+    rf_monthly = (1 + float(risk_free_annual)) ** (1 / 12) - 1
+    win["Excess_vs_RF"] = win["Monthly_Return"] - rf_monthly
+
+    agg = (
+        win.groupby(["Window", "Group"], as_index=False)
+        .agg(
+            n_obs=("Excess_vs_RF", lambda s: int(s.dropna().shape[0])),
+            mean_excess_rf=("Excess_vs_RF", "mean"),
+            std_excess_rf=("Excess_vs_RF", "std"),
+        )
+        .sort_values(["Window", "Group"])
+    )
+
+    scale = np.sqrt(12) if annualize else 1.0
+    agg["Sharpe_Regular"] = np.where(
+        agg["std_excess_rf"] > 0,
+        (agg["mean_excess_rf"] / agg["std_excess_rf"]) * scale,
+        np.nan,
+    )
+    agg["risk_free_annual"] = float(risk_free_annual)
+    agg["annualized"] = bool(annualize)
+    return agg
+
+
+def plot_regular_sharpe_4groups_before_after(
+    risk_free_annual: float = RISK_FREE_ANNUAL,
+    annualize: bool = True,
+) -> pd.DataFrame:
+    sharpe_df = build_regular_sharpe_4groups_symmetric_window(
+        risk_free_annual=risk_free_annual,
+        annualize=annualize,
+    )
+
+    order = ["Treatment Big", "Treatment Small", "Control Big", "Control Small"]
+    pivot = sharpe_df.pivot_table(
+        index="Group", columns="Window", values="Sharpe_Regular", aggfunc="mean"
+    ).reindex(order)
+
+    fig, ax = plt.subplots(figsize=(12, 6))
+    x = np.arange(len(order))
+    width = 0.36
+
+    before_vals = pivot["Before"].to_numpy()
+    after_vals = pivot["After"].to_numpy()
+
+    bars_before = ax.bar(
+        x - width / 2,
+        before_vals,
+        width,
+        label="Before",
+        color="#5E9C76",
+        edgecolor="black",
+        linewidth=0.6,
+    )
+    bars_after = ax.bar(
+        x + width / 2,
+        after_vals,
+        width,
+        label="After",
+        color="#E08E45",
+        edgecolor="black",
+        linewidth=0.6,
+    )
+
+    ax.axhline(0, color="black", linewidth=1)
+    ax.set_xticks(x)
+    ax.set_xticklabels(order, rotation=12)
+
+    y_label = (
+        "Annualized Sharpe Ratio ((R - Rf) mean / std)"
+        if annualize
+        else "Monthly Sharpe Ratio ((R - Rf) mean / std)"
+    )
+    ax.set_ylabel(y_label)
+    ax.set_title(
+        f"Supplementary Fig 08B: Regular Sharpe by 4 Groups (Rf={risk_free_annual:.1%}, Symmetric 24M Before vs After)",
+        fontweight="bold",
+    )
+    ax.legend(frameon=True)
+
+    for bars in [bars_before, bars_after]:
+        for bar in bars:
+            y = bar.get_height()
+            ax.text(
+                bar.get_x() + bar.get_width() / 2,
+                y + (0.02 if y >= 0 else -0.02),
+                f"{y:.3f}",
+                ha="center",
+                va="bottom" if y >= 0 else "top",
+                fontsize=9,
+            )
+
+    save_fig("figure_event_08b_regular_sharpe_ratio_4groups_before_after.png")
     return pivot
 
 
@@ -464,6 +591,7 @@ def plot_control_decline_attribution() -> None:
 def main() -> None:
     REPORT_DIR.mkdir(parents=True, exist_ok=True)
     pivot = plot_sharpe_4groups_before_after()
+    plot_regular_sharpe_4groups_before_after()
     plot_small_group_delta_sharpe(pivot)
     plot_top_bottom_5_stocks_car()
     plot_control_decline_attribution()
