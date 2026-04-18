@@ -12,7 +12,7 @@ sns.set_style("whitegrid")
 plt.rcParams["figure.figsize"] = (12, 7)
 plt.rcParams["font.size"] = 10
 
-BASE_DIR = Path(__file__).resolve().parent
+BASE_DIR = Path(__file__).resolve().parents[1]
 DATA_DIR = BASE_DIR / "event_study_data"
 ANALYSIS_DIR = DATA_DIR / "analysis_results"
 REPORT_DIR = DATA_DIR / "visualizations" / "report"
@@ -30,8 +30,8 @@ def save_fig(file_name: str) -> None:
 
 
 def build_excess_sharpe_4groups_symmetric_window() -> pd.DataFrame:
-    before = pd.read_csv(DATA_DIR / "prices_before_2023-08-08.csv")
-    after = pd.read_csv(DATA_DIR / "prices_after_2023-08-08.csv")
+    before = pd.read_csv(DATA_DIR / "prices_before_event_monthly.csv")
+    after = pd.read_csv(DATA_DIR / "prices_after_event_monthly.csv")
     monthly = pd.concat([before, after], ignore_index=True)
 
     monthly["Date"] = pd.to_datetime(monthly["Date"])
@@ -146,8 +146,8 @@ def build_regular_sharpe_4groups_symmetric_window(
     risk_free_annual: float = RISK_FREE_ANNUAL,
     annualize: bool = True,
 ) -> pd.DataFrame:
-    before = pd.read_csv(DATA_DIR / "prices_before_2023-08-08.csv")
-    after = pd.read_csv(DATA_DIR / "prices_after_2023-08-08.csv")
+    before = pd.read_csv(DATA_DIR / "prices_before_event_monthly.csv")
+    after = pd.read_csv(DATA_DIR / "prices_after_event_monthly.csv")
     monthly = pd.concat([before, after], ignore_index=True)
 
     monthly["Date"] = pd.to_datetime(monthly["Date"])
@@ -393,7 +393,7 @@ def plot_top_bottom_5_stocks_car() -> None:
 
 
 def plot_control_decline_attribution() -> None:
-    daily = pd.read_csv(DATA_DIR / "event_window_daily_2023-08-04_to_2023-08-10.csv")
+    daily = pd.read_csv(DATA_DIR / "event_window_daily.csv")
     daily["Date"] = pd.to_datetime(daily["Date"])
 
     control = daily[daily["Group"].str.contains("Control", na=False)].copy()
@@ -453,7 +453,7 @@ def plot_control_decline_attribution() -> None:
     group_export["group_aar_pct"] = group_export["group_aar"] * 100
     group_export["contribution_pct"] = group_export["contribution_to_control_aar"] * 100
     group_export.to_csv(
-        REPORT_DIR / "table_control_decline_group_contribution.csv", index=False
+        REPORT_DIR / "tbl_lt_01_control_decline_group_contribution.csv", index=False
     )
 
     post_export = post_stock.copy()
@@ -465,7 +465,7 @@ def plot_control_decline_attribution() -> None:
         post_export["mean_contribution_post"] * 100
     )
     post_export.to_csv(
-        REPORT_DIR / "table_control_decline_stock_contribution_post_event.csv",
+        REPORT_DIR / "tbl_lt_02_control_decline_stock_contribution_post_event.csv",
         index=False,
     )
 

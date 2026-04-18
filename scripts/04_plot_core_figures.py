@@ -13,7 +13,7 @@ sns.set_style("whitegrid")
 plt.rcParams["figure.figsize"] = (14, 10)
 plt.rcParams["font.size"] = 10
 
-BASE_DIR = Path(__file__).resolve().parent
+BASE_DIR = Path(__file__).resolve().parents[1]
 DATA_DIR = BASE_DIR / "event_study_data"
 ANALYSIS_DIR = DATA_DIR / "analysis_results"
 OUT_DIR = DATA_DIR / "visualizations"

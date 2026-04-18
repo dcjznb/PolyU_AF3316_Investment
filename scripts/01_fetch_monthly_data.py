@@ -138,7 +138,7 @@ def split_event_windows(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
 
 
 def main() -> None:
-    output_dir = Path(__file__).resolve().parent / "event_study_data"
+    output_dir = Path(__file__).resolve().parents[1] / "event_study_data"
     output_dir.mkdir(parents=True, exist_ok=True)
 
     tickers = [item["ticker"] for item in UNIVERSE]
@@ -147,9 +147,9 @@ def main() -> None:
     available_tickers = set(full_data["Ticker"].unique())
     missing_tickers = [t for t in tickers if t not in available_tickers and t != "SPY"]
 
-    before_path = output_dir / "prices_before_2023-08-08.csv"
-    after_path = output_dir / "prices_after_2023-08-08.csv"
-    universe_path = output_dir / "ticker_universe.csv"
+    before_path = output_dir / "prices_before_event_monthly.csv"
+    after_path = output_dir / "prices_after_event_monthly.csv"
+    universe_path = output_dir / "universe_tickers.csv"
 
     before_data.to_csv(before_path, index=False)
     after_data.to_csv(after_path, index=False)

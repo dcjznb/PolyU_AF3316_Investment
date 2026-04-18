@@ -185,7 +185,7 @@ def filter_event_window(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def main() -> None:
-    output_dir = Path(__file__).resolve().parent / "event_study_data"
+    output_dir = Path(__file__).resolve().parents[1] / "event_study_data"
     output_dir.mkdir(parents=True, exist_ok=True)
 
     tickers = [item["ticker"] for item in UNIVERSE]
@@ -198,7 +198,7 @@ def main() -> None:
     # Remove SPY from the main output (it's for reference/calculation only)
     event_window_no_spy = event_window[event_window["Ticker"] != "SPY"].copy()
 
-    output_path = output_dir / "event_window_daily_2023-08-04_to_2023-08-10.csv"
+    output_path = output_dir / "event_window_daily.csv"
     event_window_no_spy.to_csv(output_path, index=False)
 
     print("Daily event analysis data generated successfully.")

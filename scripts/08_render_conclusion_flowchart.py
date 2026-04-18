@@ -17,7 +17,7 @@ except Exception:
 plt.rcParams["font.size"] = 10
 
 
-BASE_DIR = Path(__file__).resolve().parent
+BASE_DIR = Path(__file__).resolve().parents[1]
 OUTPUT_DIR = BASE_DIR / "visualizations" / "report"
 
 
@@ -159,8 +159,8 @@ def build_conclusion_flowchart(output_dir: Path = OUTPUT_DIR) -> tuple[Path, Pat
         wrap=True,
     )
 
-    png_path = output_dir / "conclusion_flowchart.png"
-    pdf_path = output_dir / "conclusion_flowchart.pdf"
+    png_path = output_dir / "flowchart_conclusion.png"
+    pdf_path = output_dir / "flowchart_conclusion.pdf"
     fig.savefig(png_path, dpi=300, bbox_inches="tight", facecolor=fig.get_facecolor())
     fig.savefig(pdf_path, bbox_inches="tight", facecolor=fig.get_facecolor())
     plt.close(fig)

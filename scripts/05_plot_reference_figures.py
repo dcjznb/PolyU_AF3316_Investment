@@ -8,7 +8,7 @@ import pandas as pd
 from matplotlib.ticker import FuncFormatter
 
 
-BASE_DIR = Path(__file__).resolve().parent
+BASE_DIR = Path(__file__).resolve().parents[1]
 TABLE_10 = (
     BASE_DIR
     / "event_study_data"
