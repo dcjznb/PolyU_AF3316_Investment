@@ -1,4 +1,4 @@
-.PHONY: install data daily analysis visualize refs supplementary strategy flowchart
+.PHONY: install data daily analysis visualize refs supplementary strategy
 
 install:
 	python3 -m pip install -r requirements.txt
@@ -23,6 +23,3 @@ supplementary:
 
 strategy:
 	python3 scripts/07_build_strategy_tables.py
-
-flowchart:
-	python3 scripts/08_render_conclusion_flowchart.py
